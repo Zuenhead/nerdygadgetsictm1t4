@@ -47,13 +47,6 @@ if (isset($_GET['sort'])) {
     $_SESSION["sort"] = "price_low_high";
 }
 
-if (isset($_GET['min_prijs'])) {
-    $MinPrijs = $_GET['min_prijs'];
-}
-if (isset($_GET['max_prijs'])) {
-    $MaxPrijs = $_GET['max_prijs'];
-}
-
 switch ($SortOnPage) {
     case "price_high_low":
     {
@@ -71,6 +64,16 @@ switch ($SortOnPage) {
     case "price_low_high":
     {
         $Sort = "SellPrice";
+        break;
+    }
+    case "color_asc":
+    {
+        $Sort = "ColorID";
+        break;
+    }
+    case "color_desc":
+    {
+        $Sort = "ColorID DESC";
         break;
     }
     default:
@@ -247,6 +250,14 @@ if (isset($amount)) {
                 <option value="name_high_low" <?php if ($_SESSION['sort'] == "name_high_low") {
                     print "selected";
                 } ?>>Naam aflopend
+                </option>
+                <option value="color_asc" <?php if ($_SESSION['sort'] == "color_asc") {
+                    print "selected";
+                } ?>>Kleur oplopend
+                </option>
+                <option value="color_desc" <?php if ($_SESSION['sort'] == "color_desc") {
+                    print "selected";
+                } ?>>Kleur aflopend
                 </option>
             </select>
         </div>
