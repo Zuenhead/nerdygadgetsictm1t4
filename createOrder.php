@@ -10,7 +10,7 @@ function createOrder($databaseConnection, $customerID, $salespersonPersonID, $pi
     mysqli_stmt_execute($Statement);
 }
 
-createOrder($databaseConnection, 7, 2, 2, 2, 62162, "2021-11-19", "2021-11-22", 18507, 1, "Je dikke kale moeder", "Pleur door de brievenbus", "Existence is pain", 7, "2021-11-19 13:08");
+createOrder($databaseConnection, 7, 2, 1, 2, 62162, "2021-11-19", "2021-11-22", 18507, 1, "Je dikke kale moeder", "Pleur door de brievenbus", "Existence is pain", 7, "2021-11-19 13:08");
 
 include __DIR__ . "/footer.php";
 ?>

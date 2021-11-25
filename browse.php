@@ -66,14 +66,9 @@ switch ($SortOnPage) {
         $Sort = "SellPrice";
         break;
     }
-    case "color_asc":
+    case "color":
     {
         $Sort = "ColorID";
-        break;
-    }
-    case "color_desc":
-    {
-        $Sort = "ColorID DESC";
         break;
     }
     default:
@@ -251,13 +246,9 @@ if (isset($amount)) {
                     print "selected";
                 } ?>>Naam aflopend
                 </option>
-                <option value="color_asc" <?php if ($_SESSION['sort'] == "color_asc") {
+                <option value="color" <?php if ($_SESSION['sort'] == "color") {
                     print "selected";
-                } ?>>Kleur oplopend
-                </option>
-                <option value="color_desc" <?php if ($_SESSION['sort'] == "color_desc") {
-                    print "selected";
-                } ?>>Kleur aflopend
+                } ?>>Kleur
                 </option>
             </select>
         </div>
