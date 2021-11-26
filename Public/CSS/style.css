@@ -478,3 +478,52 @@ ul#ul-class-price li {
     border: 1px rgb(98, 158, 255) solid;
     color: #fff;
 }
+.cart{
+    width:20%;
+}
+
+
+.cart{
+
+}
+/*class "add to cart" form (view.php)*/
+form.cart{
+    float:right;
+    margin-top: 2%;
+    margin-right: 1%;
+    background-color: #212529;
+
+}
+/*class number field "add to cart" form (view.php)*/
+form.cart input[type="number"]{
+    background-color: #28242c;
+    color:  #676EFF;
+}
+
+/*class submit button "add to cart" form (view.php)*/
+form.cart input[type="submit"]{
+    background-color: #676EFF;
+}
+
+#cart_table{
+    width: 80%;
+    text-align: center;
+    border-style: solid;
+    margin-top: 5%;
+    margin-left: 10%;
+    margin-bottom: 10%;
+}
+#cart_table td{
+    border-bottom-style: solid;
+}
+
+
+#cart_table input[type='number']{
+    width: 20%;
+}
+
+#LogoImage {
+    background-image: url("../Img/ijsberen4.gif");
+    background-repeat: no-repeat;
+
+}

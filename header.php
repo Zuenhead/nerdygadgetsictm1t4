@@ -2,6 +2,7 @@
 <?php
 session_start();
 include "database.php";
+include "functions.php";
 $databaseConnection = connectToDatabase();
 ?>
 <!DOCTYPE html>
@@ -20,7 +21,6 @@ $databaseConnection = connectToDatabase();
     <link rel="stylesheet" href="Public/CSS/style.css" type="text/css">
     <link rel="stylesheet" href="Public/CSS/bootstrap.min.css" type="text/css">
     <link rel="stylesheet" href="Public/CSS/typekit.css">
-    <link rel="stylesheet" href="Public/CSS/mijn.css">
 </head>
 <body>
 <div class="Background">

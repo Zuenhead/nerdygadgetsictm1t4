@@ -2,8 +2,22 @@
 <?php
 include __DIR__ . "/header.php";
 
+
 $StockItem = getStockItem($_GET['id'], $databaseConnection);
 $StockItemImage = getStockItemImage($_GET['id'], $databaseConnection);
+$ItemID = $StockItem['StockItemID'];
+
+//pas op: functies aangepast!
+if (isset($_POST["submit"])) {              // zelfafhandelend formulier
+    $amount = (int)$_POST["amount"] ;
+    if($_POST['amount'] > 0) {
+        addProductToCart($ItemID, $amount);
+        print("<div> Product added to <a href='cart.php'> cart!</a></div>"); //confirmatie winkelmand
+    }
+}else{
+    $amount = 0;
+}
+
 ?>
 <div id="CenteredContent">
     <?php
@@ -91,7 +105,11 @@ $StockItemImage = getStockItemImage($_GET['id'], $databaseConnection);
             <h3>Artikel beschrijving</h3>
             <p><?php print $StockItem['SearchDetails']; ?></p>
         </div>
+
+
+
         <div id="StockItemSpecifications">
+
             <h3>Artikel specificaties</h3>
             <?php
             $CustomFields = json_decode($StockItem['CustomFields'], true);
@@ -127,9 +145,21 @@ $StockItemImage = getStockItemImage($_GET['id'], $databaseConnection);
                 <?php
             }
             ?>
+
+
         </div>
+
+        <form class = "cart" method="post">
+            <input type="number" name="stockItemID" value="<?php print($ItemID) ?>" hidden>
+            <input type="number" name='amount' placeholder="<?php print($amount);?>" min='0'>
+            <input type="submit" name="submit" value="Add to cart">
+        </form>
+
         <?php
     } else {
         ?><h2 id="ProductNotFound">Het opgevraagde product is niet gevonden.</h2><?php
     } ?>
+
+
+
 </div>
