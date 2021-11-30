@@ -58,18 +58,27 @@ function createOrder($databaseConnection, $customerID, $salespersonPersonID, $pi
     mysqli_stmt_execute($Statement);
 }
 
-function createOrderLine($databaseConnection, $orderID, $stockItemID, $description, $packageTypeID, $quantity, $unitPrice, $taxRate, $pickedQuantity, $lastEditedBy, $lastEditedWhen) {
-        $Query = "INSERT INTO orderlines (OrderID, StockItemID, Description, PackageTypeID, Quantity, UnitPrice, TaxRate, PickedQuantity, LastEditedBy, LastEditedWhen)
-                  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        $Statement = mysqli_prepare($databaseConnection, $Query);
-        mysqli_stmt_bind_param($Statement, "iisiiddiis", $orderID, $stockItemID, $description, $packageTypeID, $quantity, $unitPrice, $taxRate, $pickedQuantity, $lastEditedBy, $lastEditedWhen);
-        mysqli_stmt_execute($Statement);
-    }
+function ophalenOrderID($databaseConnection) {
+    $Query = "SELECT MAX(OrderID) AS NieuwsteOrderID FROM orders;";
+    $Result = mysqli_query($databaseConnection, $Query);
+    $Result = mysqli_fetch_array($Result, MYSQLI_ASSOC);
+    return $Result;
+}
+
+function createOrderLine($databaseConnection, $stockItemID, $description, $packageTypeID, $quantity, $unitPrice, $taxRate, $pickedQuantity, $lastEditedBy, $lastEditedWhen) {
+    $orderID = ophalenOrderID($databaseConnection);
+    $nieuwsteOrderID = $orderID['NieuwsteOrderID'];
+    $Query = "INSERT INTO orderlines (OrderID, StockItemID, Description, PackageTypeID, Quantity, UnitPrice, TaxRate, PickedQuantity, LastEditedBy, LastEditedWhen)
+              VALUES ($nieuwsteOrderID, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    $Statement = mysqli_prepare($databaseConnection, $Query);
+    mysqli_stmt_bind_param($Statement, "isiiddiis", $stockItemID, $description, $packageTypeID, $quantity, $unitPrice, $taxRate, $pickedQuantity, $lastEditedBy, $lastEditedWhen);
+    mysqli_stmt_execute($Statement);
+}
 
 function ophalenProduct($databaseConnection, $productID) {
-        $Query = "SELECT StockItemID, StockItemName, UnitPrice, TaxRate FROM stockitems AS SI WHERE StockItemID = $productID";
-        $Result = mysqli_query($databaseConnection, $Query);
-        $Result = mysqli_fetch_array($Result, MYSQLI_ASSOC);
-        return $Result;
+    $Query = "SELECT StockItemID, StockItemName, UnitPrice, TaxRate FROM stockitems AS SI WHERE StockItemID = $productID";
+    $Result = mysqli_query($databaseConnection, $Query);
+    $Result = mysqli_fetch_array($Result, MYSQLI_ASSOC);
+    return $Result;
 }
 ?>

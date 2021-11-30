@@ -125,12 +125,10 @@ if(!empty($cart)) { //checkt of er items in de cart zitten, zo ja, dan print hij
 //etc.
 
 if (isset($_POST['order'])) {
-//    createOrder($databaseConnection, 7, 2, 1, 2, 62162, "2021-11-19", "2021-11-22", 18507, 1, "Je dikke kale moeder", "Pleur door de brievenbus", "Existence is pain", 7, "2021-11-19 13:08");
+    createOrder($databaseConnection, 7, 2, 1, 2, 62162, date("Y-m-d"), "2021-11-22", 18507, 1, "Je dikke kale moeder", "Pleur door de brievenbus", "Existence is pain", 7, date("Y-m-d H:i:s"));
     foreach ($cart as $productID => $aantal) {
         $product = ophalenProduct($databaseConnection, $productID);
-        print_r($product);
-        print_r($aantal);
-        createOrderLine($databaseConnection, 73623, $product['StockItemID'], $product['StockItemName'], 7, $aantal, $product['UnitPrice'], $product['TaxRate'], $aantal, 7, "2021-11-30 19:30");
+        createOrderLine($databaseConnection, $product['StockItemID'], $product['StockItemName'], 7, $aantal, $product['UnitPrice'], $product['TaxRate'], $aantal, 7, date("Y-m-d H:i:s"));
     }
 }
 
