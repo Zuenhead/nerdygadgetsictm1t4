@@ -47,13 +47,6 @@ if (isset($_GET['sort'])) {
     $_SESSION["sort"] = "price_low_high";
 }
 
-if (isset($_GET['min_prijs'])) {
-    $MinPrijs = $_GET['min_prijs'];
-}
-if (isset($_GET['max_prijs'])) {
-    $MaxPrijs = $_GET['max_prijs'];
-}
-
 switch ($SortOnPage) {
     case "price_high_low":
     {
@@ -71,6 +64,11 @@ switch ($SortOnPage) {
     case "price_low_high":
     {
         $Sort = "SellPrice";
+        break;
+    }
+    case "color":
+    {
+        $Sort = "ColorID";
         break;
     }
     default:
@@ -248,6 +246,10 @@ if (isset($amount)) {
                     print "selected";
                 } ?>>Naam aflopend
                 </option>
+                <option value="color" <?php if ($_SESSION['sort'] == "color") {
+                    print "selected";
+                } ?>>Kleur
+                </option>
             </select>
         </div>
     </form>
@@ -272,7 +274,7 @@ if (isset($amount)) {
                     <?php
                     if (isset($row['ImagePath'])) { ?>
                         <div class="ImgFrame"
-                             style="background-image: url('<?php print "Public/StockItemIMG/" . $row['ImagePath']; ?>'); background-size: 230px; background-repeat: no-repeat; background-position: center;"></div>
+                             style="background-image: url('<?php print "Public/StockItemIMG/" . $row['ImagePath']; ?>'); background-size: cover; background-repeat: no-repeat; background-position: center;"></div>
                     <?php } else if (isset($row['BackupImagePath'])) { ?>
                         <div class="ImgFrame"
                              style="background-image: url('<?php print "Public/StockGroupIMG/" . $row['BackupImagePath'] ?>'); background-size: cover;"></div>

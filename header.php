@@ -2,6 +2,7 @@
 <?php
 session_start();
 include "database.php";
+include "functions.php";
 $databaseConnection = connectToDatabase();
 ?>
 <!DOCTYPE html>
@@ -20,7 +21,6 @@ $databaseConnection = connectToDatabase();
     <link rel="stylesheet" href="Public/CSS/style.css" type="text/css">
     <link rel="stylesheet" href="Public/CSS/bootstrap.min.css" type="text/css">
     <link rel="stylesheet" href="Public/CSS/typekit.css">
-    <link rel="stylesheet" href="Public/CSS/mijn.css">
 </head>
 <body>
 <div class="Background">
@@ -47,6 +47,13 @@ $databaseConnection = connectToDatabase();
                 </li>
             </ul>
         </div>
+
+<!--div voor image en tekst van het winkelwagentje -->
+    <div class="cart-logo">
+         <a href="cart.php" > <img alt="winkelmandje" src="Public/Img/shopping-cart2.png">
+            <h5 class="HrefDecoration">Winkelmandje</h5>
+    </div>
+
 <!-- code voor US3: zoeken -->
         <ul id="ul-class-navigation">
             <li>
