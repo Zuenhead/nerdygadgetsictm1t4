@@ -59,7 +59,7 @@ if(!empty($cart)) { //checkt of er items in de cart zitten, zo ja, dan print hij
             $naam = $row['StockItemName'];
             $som += $prijs;
             print("<tr>");
-            print("<td >$productid </td>");
+            print("<td>$productid</td>");
             print("<td>$naam</td>");
             print("<td ><input type='number' name=$productid placeholder='$aantal' min='1'></td>");
             print("<td>$prijs</td>");
@@ -110,7 +110,7 @@ if(!empty($cart)) { //checkt of er items in de cart zitten, zo ja, dan print hij
         <td></td>
         <td></td>
         <td></td>
-        <td><button>Place order!</button></td>
+        <td><button type='submit' form='cart' name='order'>Place order!</button></td>
         
     </tr>
 </table>");
@@ -123,6 +123,16 @@ if(!empty($cart)) { //checkt of er items in de cart zitten, zo ja, dan print hij
 //totaal prijs berekenen
 //mooi weergeven in html
 //etc.
+
+if (isset($_POST['order'])) {
+//    createOrder($databaseConnection, 7, 2, 1, 2, 62162, "2021-11-19", "2021-11-22", 18507, 1, "Je dikke kale moeder", "Pleur door de brievenbus", "Existence is pain", 7, "2021-11-19 13:08");
+    foreach ($cart as $productID => $aantal) {
+        $product = ophalenProduct($databaseConnection, $productID);
+        print_r($product);
+        print_r($aantal);
+        createOrderLine($databaseConnection, 73623, $product['StockItemID'], $product['StockItemName'], 7, $aantal, $product['UnitPrice'], $product['TaxRate'], $aantal, 7, "2021-11-30 19:30");
+    }
+}
 
 ?>
 </html>
