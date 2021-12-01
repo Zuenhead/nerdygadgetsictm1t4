@@ -690,6 +690,7 @@ form.cart input[type="submit"]{
     transition: all 0.2s;
     color: #FFFFFF;
     border-style: none;
+    font-weight: bold;
 }
 
 
