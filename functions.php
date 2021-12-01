@@ -42,7 +42,7 @@ function verbindingOpruimen($connectie){
 // database functions
 function gegevensOphalen($productID){
 
-    $statement = "SELECT StockItemID, StockItemName,  (RecommendedRetailPrice*(1+(TaxRate/100))) AS SellPrice FROM stockitems WHERE StockItemID = $productID";
+    $statement = "SELECT S.StockItemID, StockItemName, (RecommendedRetailPrice*(1+(TaxRate/100))) AS SellPrice, QuantityOnHand, SearchDetails, ImagePath, S.TaxRate FROM stockitems S JOIN stockitemholdings SH on S.StockItemID = SH.StockItemId JOIN stockitemimages SI on S.StockItemID = SI.StockItemID WHERE S.StockItemID = $productID";
     $uitvoering = mysqli_query(connectToDatabase(),$statement);
     $result = mysqli_fetch_array($uitvoering,MYSQLI_ASSOC);
     return $result;
@@ -50,7 +50,7 @@ function gegevensOphalen($productID){
 }
 
 function createOrder($databaseConnection, $customerID, $salespersonPersonID, $pickedByPersonID, $contactPersonID, $backorderOrderID, $orderDate, $expectedDeliveryDate, $customerPurchaseOrderNumber, $isUndersupplyBackordered, $comments, $deliveryInstructions, $internalComments, $lastEditedBy, $lastEditedWhen) {
-    $Query = "INSERT INTO orders (CustomerID, SalespersonPersonID, PickedByPersonID, ContactPersonID, BackorderOrderID, OrderDate, ExpectedDeliveryDate, CustomerPurchaseOrderNumber, IsUndersupplyBackordered, Comments, DeliveryInstructions, InternalComments, LastEditedBy, LastEditedWhen)
+    $Query = "INSERT INTO orders(CustomerID, SalespersonPersonID, PickedByPersonID, ContactPersonID, BackorderOrderID, OrderDate, ExpectedDeliveryDate, CustomerPurchaseOrderNumber, IsUndersupplyBackordered, Comments, DeliveryInstructions, InternalComments, LastEditedBy, LastEditedWhen)
               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
     $Statement = mysqli_prepare($databaseConnection, $Query);
@@ -80,5 +80,11 @@ function ophalenProduct($databaseConnection, $productID) {
     $Result = mysqli_query($databaseConnection, $Query);
     $Result = mysqli_fetch_array($Result, MYSQLI_ASSOC);
     return $Result;
+}
+
+function gegevensUpdaten ($databaseConnection, $aantal, $productID){
+    $Query = "UPDATE stockitemholdings
+              SET QuantityOnHand = QuantityOnHand - $aantal WHERE StockItemID = $productID";
+    mysqli_query($databaseConnection, $Query);
 }
 ?>

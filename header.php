@@ -47,6 +47,13 @@ $databaseConnection = connectToDatabase();
                 </li>
             </ul>
         </div>
+
+<!--div voor image en tekst van het winkelwagentje -->
+    <div class="cart-logo">
+         <a href="cart.php" > <img alt="winkelmandje" src="Public/Img/shopping-cart2.png">
+            <h5 class="HrefDecoration">Winkelmandje</h5>
+    </div>
+
 <!-- code voor US3: zoeken -->
         <ul id="ul-class-navigation">
             <li>

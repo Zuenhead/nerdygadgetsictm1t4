@@ -8,12 +8,14 @@ include __DIR__ . "/header.php";
     <meta charset="UTF-8">
     <title>Winkelwagen</title>
 </head>
+<body>
+    <h1 class="HeaderWinkelmand">Winkelmandje</h1>
 
-<h1>Inhoud Winkelwagen</h1>
+    <div class="CartGeheleTables">
 
 <?php
-$cart = getCart();
 
+$cart = getCart();
 
 if(isset($_POST['refresh'])){ //update de hoeveelheden als iemand de bestelling wil aanpassen
     foreach ($cart as $productid => $aantal){
@@ -33,20 +35,21 @@ if(isset($_POST['delete'])){ //verwijdert item als er op een verwijder knop is g
 
 $cart = getCart();
 ksort($cart);
-//bug: Item info wil verschijnt niet in tabel bijvoorbeeld bij productID 220, waardoor errors onstaan en de prijs incorrect is
+
 if(!empty($cart)) { //checkt of er items in de cart zitten, zo ja, dan print hij een tabel, anders print hij een melding
     print("    
+<div id='WinkelmandKnopBoven' class='KnopBovenOnder'>
+            <h3 class='VerderWinkelen'><a href='browse.php' class='HrefDecoration'>verder winkelen</a></h3>
+            <h3 class='DoorgaanBetalen'><a href='browse.php' class='HrefDecoration'>Doorgaan naar betalen</a></h3>
+        </div>
 
 <table id='cart_table'>
     <tr>
-        <th >ProductID</th>
-        <th>Naam</th>
+        <th >Product</th>
         <th>Aantal</th>
-        <th>Prijs</th>
-        <th></th>
+        <th>Subtotaal</th>
     </tr>
     <form method='post' id='cart'>
-
 ");
 //Regel met product info
 
@@ -57,72 +60,100 @@ if(!empty($cart)) { //checkt of er items in de cart zitten, zo ja, dan print hij
             $prijs = round($row['SellPrice'] * $aantal, 2);
             //de prijs formule is direct overgenomen vanuit view.php
             $naam = $row['StockItemName'];
+            $afbeelding = $row['ImagePath'];
+            $beschrijving = $row['SearchDetails'];
+            $belasting = round($row['TaxRate'], 1);
+            $Stock = $row['QuantityOnHand'];
             $som += $prijs;
             print("<tr>");
-            print("<td>$productid</td>");
-            print("<td>$naam</td>");
-            print("<td ><input type='number' name=$productid placeholder='$aantal' min='1'></td>");
-            print("<td>$prijs</td>");
-            print("<td> <button id='delete' name='delete' type='submit' value=$productid >verwijder</button> </td>");
+            print("<td xmlns=\"http://www.w3.org/1999/html\"> <div class='Cart-ProductInfo'>
+                            <img alt='$beschrijving' src='Public\StockItemIMG/$afbeelding'>
+                            <div>
+                                  <h6>$naam</h6> 
+                                  <span>$beschrijving</span>
+                        </div> 
+                   </td>");
+            print("<td >   <div class='CartAantalInfo'>
+                                <label for='aantal'>Aantal:</label>
+                                <input type='number' name=$productid placeholder='$aantal' value='$aantal' min='1' max='$Stock' id='aantal'>
+                                <button type='submit' form='cart' name='refresh' >Update cart</button> 
+                                <div class='CartVerwijderKnop'>
+                                    <button id='delete' name='delete' type='submit' value=$productid >verwijderen</button>
+                                </div>
+                            </div>
+                    </td>");
+            print("<td> 
+                        <div class='ProductSubtotaal'>
+                            €$prijs
+                           <div class='ProductBelasting'>Inclusief $belasting% BTW</div>
+                        </div>
+                   </td>");
             print("</tr>");
 
 
         }
-
     }
+    print("</table>");
+    print("</form>");
+}
+
+
+if(!empty($cart)) {
     //de hoeveelheid voor verzendkosten is op dit moment een placeholder
     $verzend = round($som * 0.01, 2);
     $totaal = $som + $verzend;
     //tabel regels voor de totalen
-    print("
-    </form>
-    <tr>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-    </tr>
-    <tr>
-        <td>Totaal</td>
-        <td> excl. verzendkosten</td>
-        <td></td>
-        <td>$som</td>
-        <td></td>
-    </tr>
-
-    <tr>
-        <td>Verzendkosten</td>
-        <td></td>
-        <td></td>
-        <td>$verzend</td>
-        <td></td>
-    </tr>
-    <tr>
-        <td>Totaal</td>
-        <td> incl. verzendkosten</td>
-        <td></td>
-        <td>$totaal</td>
-        <td></td>
-    </tr>
-    <tr>
-        <td> <button type='submit' form='cart' name='refresh' >Update cart</button> </td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td><button type='submit' form='cart' name='order'>Place order!</button></td>
+    print(" 
+    <div class='TotaalPrijs'>
+        <table>
+            <tr>
+                <td>Subtotaal</td>
+                <td>€$som</td>
+            </tr>
         
-    </tr>
-</table>");
-} else{
-    print("Your cart is empty"); //voor als er niks in de cart zit
+            <tr>
+                <td>Verzendkosten</td>
+                <td>€$verzend</td>
+            </tr>
+            <tr>
+                <td>Totaal</td>
+                <td>€$totaal</td>
+            </tr>
+            <!--
+            <tr>
+                <td> <button type='submit' form='cart' name='refresh' >Update cart</button> </td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td><button>Place order!</button></td> 
+            </tr> -->
+        </table>
+    </div>
+    
+");
 }
 
-
+if(empty($cart)){
+    print("
+                <h4 class='LeegWinkelwagen'>Je winkelwagen is leeg.</h4>
+            
+    "); //voor als er niks in de cart zit
+}
 //gegevens per artikelen in $cart (naam, prijs, etc.) uit database halen
 //totaal prijs berekenen
 //mooi weergeven in html
 //etc.
+
+if(!empty($cart)) {
+    print(" 
+   <div id='WinkelmandKnopOnder' class='KnopBovenOnder'>
+            <h3 class='VerderWinkelen'><a href='browse.php' class='HrefDecoration'>verder winkelen</a></h3>
+            <!--<h3 class='DoorgaanBetalen'><a href='browse.php' class='HrefDecoration'>Doorgaan naar betalen</a></h3> -->
+            <td><button type='submit' form='cart' name='order'>Place order!</button></td>
+            
+        </div>
+");
+}
 
 if (isset($_POST['order'])) {
     $deliveryDate = date('Y-m-d', strtotime(date("Y-m-d"). ' + 3 days'));
@@ -130,8 +161,12 @@ if (isset($_POST['order'])) {
     foreach ($cart as $productID => $aantal) {
         $product = ophalenProduct($databaseConnection, $productID);
         createOrderLine($databaseConnection, $product['StockItemID'], $product['StockItemName'], 7, $aantal, $product['UnitPrice'], $product['TaxRate'], $aantal, 7, date("Y-m-d H:i:s"));
+        gegevensUpdaten($databaseConnection, $aantal, $productID);
     }
 }
-
 ?>
+
+
+        </div>
+    </body>
 </html>

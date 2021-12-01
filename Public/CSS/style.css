@@ -478,14 +478,12 @@ ul#ul-class-price li {
     border: 1px rgb(98, 158, 255) solid;
     color: #fff;
 }
+
+/* Begin inhoud winkelmand */
 .cart{
     width:20%;
 }
 
-
-.cart{
-
-}
 /*class "add to cart" form (view.php)*/
 form.cart{
     float:right;
@@ -505,21 +503,171 @@ form.cart input[type="submit"]{
     background-color: #676EFF;
 }
 
+.CartGeheleTables td:last-child{
+    text-align: right;
+}
+
+.CartGeheleTables th:last-child{
+    text-align: right;
+}
+
 #cart_table{
     width: 80%;
-    text-align: center;
-    border-style: solid;
     margin-top: 5%;
     margin-left: 10%;
-    margin-bottom: 10%;
+
 }
+
+#cart_table th{
+    padding: 5px;
+    color: #FFFFFF;
+    font-weight: normal;
+    background: #4370CB;
+}
+
 #cart_table td{
-    border-bottom-style: solid;
+    padding: 10px 5px;
+}
+
+.Cart-ProductInfo {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.Cart-ProductInfo img {
+    width: 220px;
+    height: 220px;
+    margin-right: 10px;
+}
+
+.Cart-ProductInfo h6 {
+    margin-bottom: 15px;
+}
+
+.Cart-ProductInfo span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 7; /* number of lines to show */
+    -webkit-box-orient: vertical;
+    max-width: 50ch;
+    font-size: 15px;
+    color: #d6d6d6;
+}
+
+.CartAantalInfo input[type="number"], select, textarea{
+    width: 80px;
+    height: 30px;
+    background-color: #FFFFFF;
+    color: black;
+    border: 1px;
+}
+
+.CartAantalInfo button{
+    background: none;
+    color: #ffffff;
+    background-color:#4370CB;
+    padding: 5px;
+    margin-left: 5px;
+    border-style: none;
+    border-radius: 32px;
+}
+
+.CartVerwijderKnop button {
+    color: #f01a1a;
+    background: none;
+    border: none;
+    font: inherit;
+}
+
+.CartVerwijderKnop button:hover{
+    color: #ccc;
+}
+
+.CartVerwijderKnop {
+    position: relative;
+    top: 20px;
+}
+
+.TotaalPrijs {
+    display: flex;
+    justify-content: flex-end;
+    margin-right: 8%;
+    margin-bottom: 3%;
+}
+
+.TotaalPrijs table{
+    border-top: 2px solid #4370CB;
+    width: 100%;
+    max-width: 350px;
+}
+
+.KnopBovenOnder {
+    position: static;
+}
+
+.KnopBovenOnder a{
+    position: absolute;
+    display:inline-block;
+    padding: 5px 20px;
+    border-radius: 32px;
+    box-sizing: border-box;
+    background-color:#4370CB;
+    text-align:center;
+    transition: all 0.2s;
+}
+
+.VerderWinkelen a {
+    left: 10%;
+}
+
+.DoorgaanBetalen a {
+    right: 10%;
+}
+
+#WinkelmandKnopBoven{
+    bottom: 85px;
+    position: relative;
+}
+
+#WinkelmandKnopOnder {
+    padding-bottom: 6%;
+
+}
+
+.LeegWinkelwagen{
+    position: absolute;
+    left: 3%;
+}
+/* Einde inhoud winkelmand */
+
+
+/* Begin image winkelmand van de header */
+.cart-logo {
+    position: absolute;
+    right: 10%;
+    top: 25%;
+}
+
+.cart-logo img {
+    width: 30%;
+    height: 30%;
+    margin: 0 auto;
+    display: block;
+}
+
+.cart-logo h5 {
+    color: white;
+    font-weight: normal;
 }
 
 
-#cart_table input[type='number']{
-    width: 20%;
+.HeaderWinkelmand {
+   padding: 30px;
+}
+
+.ProductImageWinkelwagen img{
+    width: 100px;
 }
 
 #LogoImage {
@@ -527,3 +675,22 @@ form.cart input[type="submit"]{
     background-repeat: no-repeat;
 
 }
+/* Einde image winkelmand van de header */
+
+#WinkelmandKnopOnder button{
+    position: absolute;
+    right: 15%;
+    bottom: 6%;
+    display:inline-block;
+    padding: 10px 40px;
+    border-radius: 32px;
+    box-sizing: border-box;
+    background-color:#4370CB;
+    text-align:center;
+    transition: all 0.2s;
+    color: #FFFFFF;
+    border-style: none;
+    font-weight: bold;
+}
+
+
