@@ -130,6 +130,7 @@ if (isset($_POST['order'])) {
     foreach ($cart as $productID => $aantal) {
         $product = ophalenProduct($databaseConnection, $productID);
         createOrderLine($databaseConnection, $product['StockItemID'], $product['StockItemName'], 7, $aantal, $product['UnitPrice'], $product['TaxRate'], $aantal, 7, date("Y-m-d H:i:s"));
+        gegevensUpdaten($databaseConnection, $aantal, $productID);
     }
 }
 

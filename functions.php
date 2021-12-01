@@ -81,4 +81,11 @@ function ophalenProduct($databaseConnection, $productID) {
     $Result = mysqli_fetch_array($Result, MYSQLI_ASSOC);
     return $Result;
 }
+
+function gegevensUpdaten ($databaseConnection, $aantal, $productID){
+    $Query = "UPDATE stockitemholdings
+              SET QuantityOnHand = QuantityOnHand - $aantal WHERE StockItemID = $productID";
+    mysqli_query($databaseConnection, $Query);
+}
+
 ?>
