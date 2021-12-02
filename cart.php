@@ -157,7 +157,7 @@ if(!empty($cart)) {
 
 if (isset($_POST['order'])) {
     $deliveryDate = date('Y-m-d', strtotime(date("Y-m-d"). ' + 3 days'));
-    createOrder($databaseConnection, 7, 2, 1, 2, 62162, date("Y-m-d"), $deliveryDate, 18507, 1, "Je dikke kale moeder", "Pleur door de brievenbus", "Existence is pain", 7, date("Y-m-d H:i:s"));
+    createOrder($databaseConnection, 7, 2, 1, 2, 62162, date("Y-m-d"), $deliveryDate, 18507, 1, "Hallo Douwe en Puja", "Pleur door de brievenbus", "Existence is pain", 7, date("Y-m-d H:i:s"));
     foreach ($cart as $productID => $aantal) {
         $product = ophalenProduct($databaseConnection, $productID);
         createOrderLine($databaseConnection, $product['StockItemID'], $product['StockItemName'], 7, $aantal, $product['UnitPrice'], $product['TaxRate'], $aantal, 7, date("Y-m-d H:i:s"));
