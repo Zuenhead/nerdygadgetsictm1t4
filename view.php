@@ -6,6 +6,7 @@ include __DIR__ . "/header.php";
 $StockItem = getStockItem($_GET['id'], $databaseConnection);
 $StockItemImage = getStockItemImage($_GET['id'], $databaseConnection);
 $ItemID = $StockItem['StockItemID'];
+$Stock= filter_var($StockItem["QuantityOnHand"],FILTER_SANITIZE_NUMBER_INT); //$StockItem geeft voor de voorraad "voorraad: x" dit haalt het nummer eruit
 
 //pas op: functies aangepast!
 if (isset($_POST["submit"])) {              // zelfafhandelend formulier
@@ -151,7 +152,7 @@ if (isset($_POST["submit"])) {              // zelfafhandelend formulier
 
         <form class = "cart" method="post">
             <input type="number" name="stockItemID" value="<?php print($ItemID) ?>" hidden>
-            <input type="number" name='amount' placeholder="<?php print($amount);?>" min='0'>
+            <input type="number" name='amount' placeholder="<?php print($amount);?>" value="<?php print($amount);?>" min='0' max="<?php print($Stock)?>">
             <input type="submit" name="submit" value="Add to cart">
         </form>
 
