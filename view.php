@@ -12,8 +12,12 @@ $Stock= filter_var($StockItem["QuantityOnHand"],FILTER_SANITIZE_NUMBER_INT); //$
 if (isset($_POST["submit"])) {              // zelfafhandelend formulier
     $amount = (int)$_POST["amount"] ;
     if($_POST['amount'] > 0) {
-        addProductToCart($ItemID, $amount);
-        print("<div> Product added to <a href='cart.php'> cart!</a></div>"); //confirmatie winkelmand
+        if ($_POST['amount'] > $Stock) {
+            print("Error, please enter a number under $Stock");
+        } else {
+            addProductToCart($ItemID, $amount);
+            print("<div> Product added to <a href='cart.php'> cart!</a></div>"); //confirmatie winkelmand
+        }
     }
 }else{
     $amount = 0;
@@ -87,7 +91,7 @@ if (isset($_POST["submit"])) {              // zelfafhandelend formulier
             ?>
 
 
-            <h1 class="StockItemID">Artikelnummer: <?php print $StockItem["StockItemID"]; ?></h1>
+            <h1 class="StockItemID">Artikelnummer: <?php print(getVoorraadTekst($StockItem["StockItemID"])); ?></h1>
             <h2 class="StockItemNameViewSize StockItemName">
                 <?php print $StockItem['StockItemName']; ?>
             </h2>
@@ -152,7 +156,7 @@ if (isset($_POST["submit"])) {              // zelfafhandelend formulier
 
         <form class = "cart" method="post">
             <input type="number" name="stockItemID" value="<?php print($ItemID) ?>" hidden>
-            <input type="number" name='amount' placeholder="<?php print($amount);?>" value="<?php print($amount);?>" min='0' max="<?php print($Stock)?>">
+            <input type="number" name='amount' placeholder="<?php print($amount);?>" value="<?php print($amount);?>" min='0' max="<?php print($Stock)?>" step="1">
             <input type="submit" name="submit" value="Add to cart">
         </form>
 

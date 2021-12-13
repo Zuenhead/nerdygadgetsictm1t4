@@ -21,7 +21,11 @@ if(isset($_POST['refresh'])){ //update de hoeveelheden als iemand de bestelling 
     foreach ($cart as $productid => $aantal){
         if(isset($_POST[$productid])) {
             if ($_POST[$productid] != $aantal && $_POST[$productid] != "") {
-                addProductToCart($productid, $_POST[$productid]);
+                if ($_POST[$productid] > 0) {
+                    addProductToCart($productid, $_POST[$productid]);
+                }else{
+                    $_POST['delete'] = $productid;
+                }
             }
         }
     }
@@ -30,6 +34,16 @@ if(isset($_POST['refresh'])){ //update de hoeveelheden als iemand de bestelling 
 if(isset($_POST['delete'])){ //verwijdert item als er op een verwijder knop is gedrukt
     unset($cart[$_POST['delete']]);
     saveCart($cart);
+}
+
+if (isset($_POST['order'])) {
+    $deliveryDate = date('Y-m-d', strtotime(date("Y-m-d"). ' + 3 days'));
+    createOrder($databaseConnection, 7, 2, 1, 2, 62162, date("Y-m-d"), $deliveryDate, 18507, 1, "Hallo Douwe en Puja", "Pleur door de brievenbus", "Existence is pain", 7, date("Y-m-d H:i:s"));
+    foreach ($cart as $productID => $aantal) {
+        $product = ophalenProduct($databaseConnection, $productID);
+        createOrderLine($databaseConnection, $product['StockItemID'], $product['StockItemName'], 7, $aantal, $product['UnitPrice'], $product['TaxRate'], $aantal, 7, date("Y-m-d H:i:s"));
+        gegevensUpdaten($databaseConnection, $aantal, $productID);
+    }unset($_SESSION['cart']);
 }
 
 
@@ -56,7 +70,8 @@ if(!empty($cart)) { //checkt of er items in de cart zitten, zo ja, dan print hij
     $som = 0;
     foreach ($cart as $productid => $aantal) {
         if ($productid != 0 || $productid != "") {
-            $row = gegevensOphalen($productid);
+            $row = gegevensOphalen($productid,$databaseConnection);
+
             $prijs = round($row['SellPrice'] * $aantal, 2);
             //de prijs formule is direct overgenomen vanuit view.php
             $naam = $row['StockItemName'];
@@ -75,7 +90,7 @@ if(!empty($cart)) { //checkt of er items in de cart zitten, zo ja, dan print hij
                    </td>");
             print("<td >   <div class='CartAantalInfo'>
                                 <label for='aantal'>Aantal:</label>
-                                <input type='number' name=$productid placeholder='$aantal' value='$aantal' min='1' max='$Stock' id='aantal'>
+                                <input type='number' name=$productid placeholder='$aantal' value='$aantal' min='0' max='$Stock' id='aantal' step='1'>
                                 <button type='submit' form='cart' name='refresh' >Update cart</button> 
                                 <div class='CartVerwijderKnop'>
                                     <button id='delete' name='delete' type='submit' value=$productid >verwijderen</button>
@@ -134,10 +149,15 @@ if(!empty($cart)) {
 }
 
 if(empty($cart)){
-    print("
+    if(isset($_POST['order'])){
+        print("<h4 class='LeegWinkelwagen'>Bedankt voor uw bestelling</h4>");
+        unset($_POST['order']);
+    }else {
+        print("
                 <h4 class='LeegWinkelwagen'>Je winkelwagen is leeg.</h4>
             
-    "); //voor als er niks in de cart zit
+    ");
+    }//voor als er niks in de cart zit
 }
 //gegevens per artikelen in $cart (naam, prijs, etc.) uit database halen
 //totaal prijs berekenen
@@ -155,15 +175,7 @@ if(!empty($cart)) {
 ");
 }
 
-if (isset($_POST['order'])) {
-    $deliveryDate = date('Y-m-d', strtotime(date("Y-m-d"). ' + 3 days'));
-    createOrder($databaseConnection, 7, 2, 1, 2, 62162, date("Y-m-d"), $deliveryDate, 18507, 1, "Hallo Douwe en Puja", "Pleur door de brievenbus", "Existence is pain", 7, date("Y-m-d H:i:s"));
-    foreach ($cart as $productID => $aantal) {
-        $product = ophalenProduct($databaseConnection, $productID);
-        createOrderLine($databaseConnection, $product['StockItemID'], $product['StockItemName'], 7, $aantal, $product['UnitPrice'], $product['TaxRate'], $aantal, 7, date("Y-m-d H:i:s"));
-        gegevensUpdaten($databaseConnection, $aantal, $productID);
-    }
-}
+
 ?>
 
 
