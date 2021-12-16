@@ -87,4 +87,23 @@ function gegevensUpdaten ($databaseConnection, $aantal, $productID){
               SET QuantityOnHand = QuantityOnHand - $aantal WHERE StockItemID = $productID";
     mysqli_query($databaseConnection, $Query);
 }
+
+function insertReview ($databaseConnection, $customerID, $stockItemID, $rating, $title, $comment) {
+        $Query = "INSERT INTO reviews(CustomerID, StockItemID,  Rating, Title, Comment)
+                  VALUES (?, ?, ?, ?, ?)";
+        $Statement = mysqli_prepare($databaseConnection, $Query);
+        mysqli_stmt_bind_param($Statement, "iiiss", $customerID, $stockItemID, $rating, $title, $comment);
+        mysqli_stmt_execute($Statement);
+}
+
+function ophalenReviews($databaseConnection, $productID) {
+        $Query = "SELECT Rating, Title, Comment
+                  FROM Reviews
+                  WHERE StockItemID = $productID
+                  ORDER BY ReviewID DESC
+                  LIMIT 10";
+        $Result = mysqli_query($databaseConnection, $Query);
+        $Result = mysqli_fetch_all($Result, MYSQLI_ASSOC);
+        return $Result;
+}
 ?>
