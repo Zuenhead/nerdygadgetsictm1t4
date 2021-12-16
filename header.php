@@ -2,6 +2,7 @@
 <?php
 session_start();
 include "database.php";
+include "functions.php";
 $databaseConnection = connectToDatabase();
 ?>
 <!DOCTYPE html>
@@ -9,18 +10,17 @@ $databaseConnection = connectToDatabase();
 <head>
     <title>NerdyGadgets</title>
 
-    <!-- Javascript -->
+<!--     Javascript -->
     <script src="Public/JS/fontawesome.js"></script>
     <script src="Public/JS/jquery.min.js"></script>
     <script src="Public/JS/bootstrap.min.js"></script>
     <script src="Public/JS/popper.min.js"></script>
     <script src="Public/JS/resizer.js"></script>
 
-    <!-- Style sheets-->
+<!--     Style sheets-->
     <link rel="stylesheet" href="Public/CSS/style.css" type="text/css">
     <link rel="stylesheet" href="Public/CSS/bootstrap.min.css" type="text/css">
     <link rel="stylesheet" href="Public/CSS/typekit.css">
-    <link rel="stylesheet" href="Public/CSS/mijn.css">
 </head>
 <body>
 <div class="Background">
@@ -47,6 +47,13 @@ $databaseConnection = connectToDatabase();
                 </li>
             </ul>
         </div>
+
+<!--div voor image en tekst van het winkelwagentje -->
+    <div class="cart-logo">
+         <a href="cart.php" > <img alt="winkelmandje" src="Public/Img/shopping-cart2.png">
+            <h5 class="HrefDecoration">Winkelmandje</h5>
+    </div>
+
 <!-- code voor US3: zoeken -->
         <ul id="ul-class-navigation">
             <li>

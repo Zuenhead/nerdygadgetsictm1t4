@@ -2,8 +2,28 @@
 <?php
 include __DIR__ . "/header.php";
 
+
 $StockItem = getStockItem($_GET['id'], $databaseConnection);
 $StockItemImage = getStockItemImage($_GET['id'], $databaseConnection);
+if(isset($StockItem)) {
+    $ItemID = $StockItem['StockItemID'];
+    $Stock = filter_var($StockItem["QuantityOnHand"], FILTER_SANITIZE_NUMBER_INT); //$StockItem geeft voor de voorraad "voorraad: x" dit haalt het nummer eruit
+}
+//pas op: functies aangepast!
+if (isset($_POST["submit"])) {              // zelfafhandelend formulier
+    $amount = (int)$_POST["amount"] ;
+    if($_POST['amount'] > 0) {
+        if ($_POST['amount'] > $Stock) {
+            print("Error, please enter a number under $Stock");
+        } else {
+            addProductToCart($ItemID, $amount);
+            print("<div> Product added to <a href='cart.php'> cart!</a></div>"); //confirmatie winkelmand
+        }
+    }
+}else{
+    $amount = 0;
+}
+
 ?>
 <div id="CenteredContent">
     <?php
@@ -26,7 +46,7 @@ $StockItemImage = getStockItemImage($_GET['id'], $databaseConnection);
                 if (count($StockItemImage) == 1) {
                     ?>
                     <div id="ImageFrame"
-                         style="background-image: url('Public/StockItemIMG/<?php print $StockItemImage[0]['ImagePath']; ?>'); background-size: 300px; background-repeat: no-repeat; background-position: center;"></div>
+                         style="background-image: url('Public/StockItemIMG/<?php print $StockItemImage[0]['ImagePath']; ?>'); background-size: cover; background-repeat: no-repeat; background-position: center;"></div>
                     <?php
                 } else if (count($StockItemImage) >= 2) { ?>
                     <!-- meerdere plaatjes laten zien -->
@@ -72,10 +92,11 @@ $StockItemImage = getStockItemImage($_GET['id'], $databaseConnection);
             ?>
 
 
-            <h1 class="StockItemID">Artikelnummer: <?php print $StockItem["StockItemID"]; ?></h1>
+            <h1 class="StockItemID">Artikelnummer: <?php print(getVoorraadTekst($StockItem["StockItemID"])); ?></h1>
             <h2 class="StockItemNameViewSize StockItemName">
                 <?php print $StockItem['StockItemName']; ?>
             </h2>
+
             <div class="QuantityText"><?php print $StockItem['QuantityOnHand']; ?></div>
             <div id="StockItemHeaderLeft">
                 <div class="CenterPriceLeft">
@@ -87,11 +108,17 @@ $StockItemImage = getStockItemImage($_GET['id'], $databaseConnection);
             </div>
         </div>
 
+
         <div id="StockItemDescription">
             <h3>Artikel beschrijving</h3>
             <p><?php print $StockItem['SearchDetails']; ?></p>
+
         </div>
+
+
+
         <div id="StockItemSpecifications">
+
             <h3>Artikel specificaties</h3>
             <?php
             $CustomFields = json_decode($StockItem['CustomFields'], true);
@@ -127,9 +154,45 @@ $StockItemImage = getStockItemImage($_GET['id'], $databaseConnection);
                 <?php
             }
             ?>
+
+
         </div>
+
+        <form class = "cart" method="post">
+            <input type="number" name="stockItemID" value="<?php print($ItemID) ?>" hidden>
+            <input type="number" name='amount' placeholder="<?php print($amount);?>" value="<?php print($amount);?>" min='0' max="<?php print($Stock)?>" step="1">
+            <input type="submit" name="submit" value="Add to cart">
+        </form>
+
+
+        <table id="alternatieven">
+            <?php  $alternatieven = array(alternatiefOphalen($databaseConnection,$ItemID));
+            print("<tr>");
+            for($i=0; $i<3; $i++) {
+                if (isset($alternatieven[0][$i]['stockitemid'])){
+                    $afbeelding = $alternatieven[0][$i]["imagepath"];
+                    print("<th> <a href='view.php?id=" . $alternatieven[0][$i]['stockitemid'] ."'> <img src='Public/StockItemIMG/" . $afbeelding . "' width='50%' alt='test'><br>" .
+                        $alternatieven[0][$i]['stockitemname'] . "<br> € " . number_format($alternatieven[0][$i]['SellPrice'], 2,".",",") . "</th>");
+
+
+                }elseif($i == 0){
+                    print("Sorry, er zijn geen gerelateerde producten");
+                }
+            }
+
+            print("</tr> </table>")/**/
+            ?>
+
+
+
+        </table>
         <?php
     } else {
         ?><h2 id="ProductNotFound">Het opgevraagde product is niet gevonden.</h2><?php
-    } ?>
+    }
+    ?>
+
+
+
+
 </div>
