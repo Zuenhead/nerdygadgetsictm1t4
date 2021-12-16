@@ -255,9 +255,56 @@ function aantalKortingVerwijderen(){
     }
 }
 
+function insertReview ($databaseConnection, $customerID, $stockItemID, $rating, $title, $comment) {
+    $Query = "INSERT INTO reviews(CustomerID, StockItemID,  Rating, Title, Comment)
+                  VALUES (?, ?, ?, ?, ?)";
+    $Statement = mysqli_prepare($databaseConnection, $Query);
+    mysqli_stmt_bind_param($Statement, "iiiss", $customerID, $stockItemID, $rating, $title, $comment);
+    mysqli_stmt_execute($Statement);
+}
 
+function ophalenReviews($databaseConnection, $productID) {
+    $Query = "SELECT Rating, Title, Comment
+                  FROM Reviews
+                  WHERE StockItemID = $productID
+                  ORDER BY ReviewID DESC
+                  LIMIT 10";
+    $Result = mysqli_query($databaseConnection, $Query);
+    $Result = mysqli_fetch_all($Result, MYSQLI_ASSOC);
+    return $Result;
+}
 
+function sendMail() {
+//Roept PHPMailer class aan
+    $mail = new PHPMailer(true);
 
+//Probeert mail te verzenden
+    try {
+        //Server instellingen
+        $mail->SMTPSecure = 'tls';
+        $mail->isSMTP();                                            //Send using SMTP
+        $mail->Host = 'smtp.gmail.com';                     //Set the SMTP server to send through
+        $mail->SMTPAuth = true;                                   //Enable SMTP authentication
+        $mail->Username = 'lopendeijsbeer@gmail.com';                     //SMTP username
+        $mail->Password = 'Jn5gSfVA^At!N./r';                               //SMTP password
+        $mail->Port = 587;                                    //TCP port to connect to; use 587 if you have set `SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS`
+
+        //ontvangers en verzender
+        $mail->setFrom('lopendeijsbeer@gmail.com', 'Mailer');
+        $mail->addAddress('ruitenbeeksven@gmail.com', 'User');     //Add a recipient
+
+        //inhoud
+        $mail->Subject = 'Testmail';
+        $mail->Body    = 'Dit is een testmail.<br>https://youtu.be/dQw4w9WgXcQ';
+        $mail->AltBody = 'Dit is een testmail.';
+
+        //verzenden
+        $mail->send();
+        echo 'Message has been sent';
+    } catch (Exception $e) {
+        echo "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
+    }
+}
 
 
 ?>
