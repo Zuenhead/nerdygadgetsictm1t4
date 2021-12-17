@@ -274,10 +274,7 @@ function ophalenReviews($databaseConnection, $productID) {
     return $Result;
 }
 
-function sendMail() {
-//Roept PHPMailer class aan
-    $mail = new PHPMailer(true);
-
+function sendMail($mail) {
 //Probeert mail te verzenden
     try {
         //Server instellingen
