@@ -144,11 +144,13 @@ if(!empty($cart)) { //checkt of er items in de cart zitten, zo ja, dan print hij
 
     $kortingAantal=aantalKorting();
     if (isset($_POST['korting'])) {
-        if($kortingAantal <= 3) {
-            $korting = ophalenKorting($databaseConnection, $customerID, $_POST["korting"]);
-            if ($korting != null) {
-                aantalKortingBijwerken();
-                kortingenToevoegen($_POST["korting"], $korting["Amount"], $korting["Percentage"], $korting["Verzend"]);
+        if(!array_key_exists($_POST["korting"],getKorting())) {
+            if ($kortingAantal <= 3) {
+                $korting = ophalenKorting($databaseConnection, $customerID, $_POST["korting"]);
+                if ($korting != null) {
+                    aantalKortingBijwerken();
+                    kortingenToevoegen($_POST["korting"], $korting["Amount"], $korting["Percentage"], $korting["Verzend"]);
+                }
             }
         }
     }
