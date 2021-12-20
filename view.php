@@ -84,7 +84,13 @@ if(isset($StockItem)) {
                 <?php print $StockItem['StockItemName']; ?>
             </h2>
 
-            <div class="QuantityText"><?php print $StockItem['QuantityOnHand']; ?></div>
+            <div class="QuantityText"><?php if ($Stock > 1000) { //Print verschilende waardes bij verschilende stock hoeveelheden.
+                    print "Ruime voorraad beschikbaar";
+                } elseif ($Stock <= 0){
+                    print "Niet op voorraad";
+                } else {
+                    print  $StockItem['QuantityOnHand'];
+                } ?></div>
             <div id="StockItemHeaderLeft">
                 <div class="CenterPriceLeft">
                     <div class="CenterPriceLeftChild">
