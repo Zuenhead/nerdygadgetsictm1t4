@@ -15,7 +15,11 @@ include __DIR__ . "/header.php";
 
 <?php
 $cart = getCart();
-$customerID = 1;
+if(isset($_SESSION["UserLogin"])){
+    $customerID = $_SESSION["UserLogin"];
+}else{
+    $customerID = 0;
+}
 
 
 if(isset($_POST['refresh'])){ //update de hoeveelheden als iemand de bestelling wil aanpassen
@@ -100,7 +104,7 @@ if(!empty($cart)) { //checkt of er items in de cart zitten, zo ja, dan print hij
         if ($productid != 0 || $productid != "") {
             $row = gegevensOphalen($productid,$databaseConnection);
 
-            $prijs = number_format($row['SellPrice'] * $aantal, 2);
+            $prijs = number_format($row['SellPrice'] * $aantal, 2,".","");
             //de prijs formule is direct overgenomen vanuit view.php
             $naam = $row['StockItemName'];
             $afbeelding = $row['ImagePath'];
@@ -131,7 +135,7 @@ if(!empty($cart)) { //checkt of er items in de cart zitten, zo ja, dan print hij
                            <div class='ProductBelasting'>Inclusief $belasting% BTW</div>
                         </div>
                    </td>");
-            print("</tr>");
+            print("</tr></form>");
 
 
         }
@@ -177,7 +181,7 @@ if(!empty($cart)) { //checkt of er items in de cart zitten, zo ja, dan print hij
 
 
         foreach (getKorting() as $code => $hoeveelheid) {
-            print("<tr>");
+            print("<form name='korting' method='post' id='korting'><tr>");
             print("<td xmlns=\"http://www.w3.org/1999/html\"> <div class='Cart-ProductInfo'>
                             <div>
                                   <h6>$code</h6> ");
@@ -286,10 +290,10 @@ if(!empty($cart)) {
         <table>");
     //convert alle bedragen, zodat het netter staat
     //de hoeveelheid voor verzendkosten is op dit moment een placeholder
-    $kortingSom = number_format($kortingSom,2);
-    $som = number_format($som,2);
-    $verzend = number_format(berekenVerzend($som,$verzendKortingSom),2);
-    $totaal = number_format($som + $verzend - $kortingSom,2);
+    $kortingSom = number_format($kortingSom,2,".","");
+    $som = number_format($som,2,".","");
+    $verzend = number_format(berekenVerzend($som,$verzendKortingSom),2,".","");
+    $totaal = number_format($som + $verzend - $kortingSom,2,".","");
 
     if($totaal<0){
         $totaal = 0;
