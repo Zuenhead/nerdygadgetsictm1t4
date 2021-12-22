@@ -106,7 +106,6 @@ if(isset($StockItem)) {
                     <input type="submit" id="ImageButton" name="submit" value="Add to cart">
                 </form>
                 <?php
-                //pas op: functies aangepast!
                 if (isset($_POST["submit"])) {              // zelfafhandelend formulier
                     $amount = (int)$_POST["amount"] ;
                     if($_POST['amount'] > 0) {
@@ -188,7 +187,7 @@ if(isset($StockItem)) {
                 }
             }
 
-            print("</tr> </table>")/**/
+            print("</tr> </table>");
             ?>
 
 

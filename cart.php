@@ -289,7 +289,6 @@ if(!empty($cart)) {
     <div class='TotaalPrijs'>
         <table>");
     //convert alle bedragen, zodat het netter staat
-    //de hoeveelheid voor verzendkosten is op dit moment een placeholder
     $kortingSom = number_format($kortingSom,2,".","");
     $som = number_format($som,2,".","");
     $verzend = number_format(berekenVerzend($som,$verzendKortingSom),2,".","");

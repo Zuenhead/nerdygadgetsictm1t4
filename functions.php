@@ -200,8 +200,12 @@ function berekenKorting($amount,$percentage,$subtotaal){
     $korting = $subtotaal - ($amount + $percentage*$subtotaal);
     return $korting;
 }
+
 function berekenVerzend($subtotaal,$verzendkorting){
     $verzendkorting = 1-$verzendkorting/100;
+    if($verzendkorting<0){
+        $verzendkorting = 0;
+    }
     if($subtotaal > 30){
         $verzend = 0;
     }elseif($verzendkorting >= 0){
@@ -238,6 +242,7 @@ function kortingenToevoegen($kortingscode, $amount, $percentage,$verzend)
     }
 }
 //functies hoeveelheid kortingscodes
+
 function aantalKorting(){
     if(isset($_SESSION["kortingAantal"])){
         $kortingAantal = $_SESSION["kortingAantal"];
