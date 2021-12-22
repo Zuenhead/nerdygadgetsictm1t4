@@ -266,17 +266,18 @@ function aantalKortingVerwijderen(){
 }
 
 //functies reviews
-function insertReview ($databaseConnection, $customerID, $stockItemID, $rating, $title, $comment) {
-    $Query = "INSERT INTO reviews(CustomerID, StockItemID,  Rating, Title, Comment)
+function insertReview ($databaseConnection, $personID, $stockItemID, $rating, $title, $comment) {
+    $Query = "INSERT INTO reviews(PersonID, StockItemID,  Rating, Title, Comment)
                   VALUES (?, ?, ?, ?, ?)";
     $Statement = mysqli_prepare($databaseConnection, $Query);
-    mysqli_stmt_bind_param($Statement, "iiiss", $customerID, $stockItemID, $rating, $title, $comment);
+    mysqli_stmt_bind_param($Statement, "iiiss", $personID, $stockItemID, $rating, $title, $comment);
     mysqli_stmt_execute($Statement);
 }
 
 function ophalenReviews($databaseConnection, $productID) {
-    $Query = "SELECT Rating, Title, Comment
-                  FROM Reviews
+    $Query = "SELECT UserName, Rating, Title, Comment
+                  FROM Reviews R
+                  LEFT JOIN Useraccounts U ON R.PersonID = U.PersonID
                   WHERE StockItemID = $productID
                   ORDER BY ReviewID DESC
                   LIMIT 10";

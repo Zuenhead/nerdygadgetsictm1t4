@@ -240,7 +240,7 @@ if (isset($_POST['review_submit'])) {
         echo "Ongeldige sterbeoordeling.";
         $rating = NULL;
     }
-    insertReview($databaseConnection, 7, $ItemID, $rating, $titel, $beschrijving);
+    insertReview($databaseConnection, $_SESSION['UserName'], $ItemID, $rating, $titel, $beschrijving);
 }
 
 $reviewsArray = ophalenReviews($databaseConnection, $ItemID);
