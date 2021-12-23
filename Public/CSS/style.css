@@ -602,6 +602,22 @@ ul#ul-class-price li {
     transition: all 0.2s;
 }
 
+.KnopBovenOnder input[type='submit']{
+    display:inline-block;
+    height: 5.5vh;
+    width: 18vw;
+    margin-right: 10vw;
+    border-radius: 32px;
+    background-color:#00B900;
+    text-align:center;
+    transition: all 0.2s;
+    float: right;
+    font-weight: 600;
+    color: #FFFFFF;
+    font-size: 24px;
+    border: none;
+}
+
 .VerderWinkelen a {
     left: 10%;
 }
@@ -834,11 +850,43 @@ ul#ul-class-price li {
 
 /* Einde logout page */
 
+/* Begin signup page */
+.form-signup {
+    width: 400px;
+    margin: 10px auto;
+    display: block;
+}
+
+.form-signup button {
+    margin: 10% auto;
+    font-size: 20px;
+    display: block;
+    width: 100%;
+    background: #00B900;
+    color: #FFFFFF;
+    border: 1px solid black;
+    font-weight: 700;
+    padding-bottom: 5px;
+}
+
+.accountmaken h1 {
+    text-align: center;
+    margin-bottom: 3%;
+}
+/* Einde signup page */
+
 /* Begin opmaak error alert veld */
+
+#AlertFail{
+    background-color: #f44336;
+}
+
+#AlertSucces{
+    background-color: #00B900;
+}
 
 .Alert {
     padding: 20px;
-    background-color: #f44336;
     color: white;
     margin-bottom: 15px;
     width: 30%;
@@ -904,6 +952,7 @@ ul#ul-class-price li {
 #AlertOrder{
     float: right;
     margin: 10px 15px 0 0;
+    background-color: #f44336;
 }
 
 /* Einde order page */
@@ -931,24 +980,3 @@ input#QuantityDisplay{
 
 }
 /* Einde toevoegen cart knop in view */
-
-/*
-
-form.cart{
-    float:right;
-    margin-top: 2%;
-    margin-right: 1%;
-    background-color: #212529;
-
-}
-
-form.cart input[type="number"]{
-    background-color: #28242c;
-    color:  #676EFF;
-}
-
-
-form.cart input[type="submit"]{
-    background-color: #676EFF;
-}
-*/
