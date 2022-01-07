@@ -1,0 +1,16 @@
+use nerdygadgets;
+insert into stockitemimages (StockItemID, ImagePath)
+values
+(150,"Toys.jpg"),
+(151,"Toys.jpg"),
+(152,"Toys.jpg");
+insert into stockitemimages (StockItemID, ImagePath)
+values
+(220,"Chocolate.jpg"),
+(221,"Chocolate.jpg"),
+(222,"Chocolate.jpg"),
+(223,"Chocolate.jpg"),
+(224,"Chocolate.jpg"),
+(225,"Chocolate.jpg"),
+(226,"Chocolate.jpg"),
+(227,"Chocolate.jpg");
