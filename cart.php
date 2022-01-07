@@ -129,12 +129,12 @@ if(!empty($cart)) { //checkt of er items in de cart zitten, zo ja, dan print hij
                            <div class='ProductBelasting'>Inclusief $belasting% BTW</div>
                         </div>
                    </td>");
-            print("</tr></form>");
+            print("</tr>");
 
 
         }
     }
-
+    print("</form>");
     //Berekeningen voor de kortingen
     //afhandelend formulier kortingen
 
@@ -160,7 +160,7 @@ if(!empty($cart)) { //checkt of er items in de cart zitten, zo ja, dan print hij
                 $korting = ophalenKorting($databaseConnection, $customerID, $code);
                 if ($korting != null) {
                     $verzendKorting = $korting['Verzend'];
-                    $korting = number_format(abs(berekenKorting($korting["Amount"], $korting["Percentage"], $som)), 2);
+                    $korting = number_format(abs(berekenKorting($korting["Amount"], $korting["Percentage"], $som)), 2,".","");
                     $kortingSom += $korting;
                     $verzendKortingSom += $verzendKorting;
 
@@ -195,7 +195,8 @@ if(!empty($cart)) { //checkt of er items in de cart zitten, zo ja, dan print hij
             }
             print("
                    </td>
-                   </tr>");
+                   </tr>
+                   </form>");
         }
     }else{
         $verzendKortingSom = 0;
@@ -205,6 +206,7 @@ if(!empty($cart)) { //checkt of er items in de cart zitten, zo ja, dan print hij
 
 
     print("
+            <form name='kortingInvoeren' method='post' id='kortingInvoeren'>
             <tr>
                 <td>
                     <div class='Cart-ProductInfo'>");
