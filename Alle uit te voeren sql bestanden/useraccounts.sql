@@ -1,3 +1,4 @@
+use nerdygadgets;
 -- phpMyAdmin SQL Dump
 -- version 5.1.1
 -- https://www.phpmyadmin.net/
@@ -26,7 +27,7 @@ SET time_zone = "+00:00";
 --
 -- Tabelstructuur voor tabel `useraccounts`
 --
-
+drop table if exists `useraccounts`;
 CREATE TABLE `useraccounts` (
   `PersonID` int(11) NOT NULL,
   `UserName` varchar(50) NOT NULL,

@@ -1,9 +1,10 @@
+use nerdygadgets;
 -- phpMyAdmin SQL Dump
 -- version 5.1.1
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Dec 16, 2021 at 11:50 AM
+-- Generation Time: Dec 22, 2021 at 03:08 PM
 -- Server version: 10.4.21-MariaDB
 -- PHP Version: 8.0.11
 
@@ -26,10 +27,11 @@ SET time_zone = "+00:00";
 --
 -- Table structure for table `reviews`
 --
+drop table if exists `reviews`;
 
 CREATE TABLE `reviews` (
   `ReviewID` int(11) NOT NULL,
-  `CustomerID` int(11) NOT NULL,
+  `PersonID` int(11) NOT NULL,
   `StockItemID` int(11) NOT NULL,
   `Rating` tinyint(1) NOT NULL,
   `Title` varchar(100) NOT NULL,
@@ -40,18 +42,18 @@ CREATE TABLE `reviews` (
 -- Dumping data for table `reviews`
 --
 
-INSERT INTO `reviews` (`ReviewID`, `CustomerID`, `StockItemID`, `Rating`, `Title`, `Comment`) VALUES
-(3, 7, 138, 5, 'mooi man', 'kei goeie product'),
-(4, 7, 138, 4, 'titel', 'beschrijving'),
-(5, 7, 138, 1, 'matig', 'boeie'),
-(6, 7, 138, 3, 'gemiddeld', 'kan beter'),
-(7, 7, 138, 5, 'titel', 'beschrijving'),
-(8, 7, 138, 5, 'titel', 'beschrijving'),
-(9, 7, 138, 2, 'titel', 'beschrijving'),
-(10, 7, 138, 2, 'titel', 'beschrijving'),
-(11, 7, 138, 1, 'titel', 'beschrijving'),
-(12, 7, 138, 4, 'titel', 'beschrijving'),
-(13, 7, 138, 5, 'titel', 'beschrijving');
+INSERT INTO `reviews` (`ReviewID`, `PersonID`, `StockItemID`, `Rating`, `Title`, `Comment`) VALUES
+(3, 4001, 138, 5, 'mooi man', 'kei goeie product'),
+(4, 4001, 138, 4, 'titel', 'beschrijving'),
+(5, 4001, 138, 1, 'matig', 'boeie'),
+(6, 4001, 138, 3, 'gemiddeld', 'kan beter'),
+(7, 4001, 138, 5, 'titel', 'beschrijving'),
+(8, 4001, 138, 5, 'titel', 'beschrijving'),
+(9, 4001, 138, 2, 'titel', 'beschrijving'),
+(10, 4001, 138, 2, 'titel', 'beschrijving'),
+(11, 4001, 138, 1, 'titel', 'beschrijving'),
+(12, 4001, 138, 4, 'titel', 'beschrijving'),
+(13, 4001, 138, 5, 'titel', 'beschrijving');
 
 --
 -- Indexes for dumped tables
@@ -62,8 +64,8 @@ INSERT INTO `reviews` (`ReviewID`, `CustomerID`, `StockItemID`, `Rating`, `Title
 --
 ALTER TABLE `reviews`
   ADD PRIMARY KEY (`ReviewID`),
-  ADD KEY `FK_Reviews_CustomerID_Customers` (`CustomerID`),
-  ADD KEY `FK_Reviews_StockItemID_StockItems` (`StockItemID`);
+  ADD KEY `FK_Reviews_StockItemID_StockItems` (`StockItemID`),
+  ADD KEY `FK_Reviews_PersonID_UserAccounts` (`PersonID`);
 
 --
 -- AUTO_INCREMENT for dumped tables
@@ -83,7 +85,7 @@ ALTER TABLE `reviews`
 -- Constraints for table `reviews`
 --
 ALTER TABLE `reviews`
-  ADD CONSTRAINT `FK_Reviews_CustomerID_Customers` FOREIGN KEY (`CustomerID`) REFERENCES `customers` (`CustomerID`),
+  ADD CONSTRAINT `FK_Reviews_PersonID_UserAccounts` FOREIGN KEY (`PersonID`) REFERENCES `useraccounts` (`PersonID`),
   ADD CONSTRAINT `FK_Reviews_StockItemID_StockItems` FOREIGN KEY (`StockItemID`) REFERENCES `stockitems` (`StockItemID`);
 COMMIT;
 
