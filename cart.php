@@ -15,11 +15,7 @@ include __DIR__ . "/header.php";
 
 <?php
 $cart = getCart();
-if(isset($_SESSION["UserLogin"])){
-    $customerID = $_SESSION["UserLogin"];
-}else{
-    $customerID = 0;
-}
+$customerID = 1;
 
 
 if(isset($_POST['refresh'])){ //update de hoeveelheden als iemand de bestelling wil aanpassen
@@ -70,12 +66,18 @@ if (isset($_POST['order'])) {
 $cart = getCart();
 ksort($cart);
 
+print("<div id='WinkelmandKnopBoven' class='KnopBovenOnder'>");
+
 if(!empty($cart)) {
     print(" 
-   <div id='WinkelmandKnopOnder' class='KnopBovenOnder'>
-            <h3 class='VerderWinkelen'><a href='browse.php' class='HrefDecoration'>verder winkelen</a></h3>  
-        </div>
+            <h3 class='VerderWinkelen'><a href='browse.php' class='HrefDecoration'>verder winkelen</a></h3>
+            
 ");
+    if (!empty($_SESSION['UserLogin'])) {
+        print("<h3 class='DoorgaanBetalen'><a href='order.php' class='HrefDecoration'>Doorgaan naar betalen</a></h3> ");
+    } else {
+        print(" <h3 id='WinkelmandInlog' class='DoorgaanBetalen'><a href='login.php' class='HrefDecoration'>Inloggen</a></h3> ");
+    }
 }
 
 
@@ -98,7 +100,7 @@ if(!empty($cart)) { //checkt of er items in de cart zitten, zo ja, dan print hij
         if ($productid != 0 || $productid != "") {
             $row = gegevensOphalen($productid,$databaseConnection);
 
-            $prijs = number_format($row['SellPrice'] * $aantal, 2,".","");
+            $prijs = number_format($row['SellPrice'] * $aantal, 2);
             //de prijs formule is direct overgenomen vanuit view.php
             $naam = $row['StockItemName'];
             $afbeelding = $row['ImagePath'];
@@ -129,13 +131,14 @@ if(!empty($cart)) { //checkt of er items in de cart zitten, zo ja, dan print hij
                            <div class='ProductBelasting'>Inclusief $belasting% BTW</div>
                         </div>
                    </td>");
-            print("</tr></form>");
+            print("</tr>");
 
 
         }
     }
 
     //Berekeningen voor de kortingen
+    //KIJK UIT, DE CUSTOMER ID MOET NOG VERANDERT WORDEN MET INLOGGEN
     //afhandelend formulier kortingen
 
     $kortingAantal=aantalKorting();
@@ -174,7 +177,7 @@ if(!empty($cart)) { //checkt of er items in de cart zitten, zo ja, dan print hij
 
 
         foreach (getKorting() as $code => $hoeveelheid) {
-            print("<form name='korting' method='post' id='korting'><tr>");
+            print("<tr>");
             print("<td xmlns=\"http://www.w3.org/1999/html\"> <div class='Cart-ProductInfo'>
                             <div>
                                   <h6>$code</h6> ");
@@ -282,10 +285,11 @@ if(!empty($cart)) {
     <div class='TotaalPrijs'>
         <table>");
     //convert alle bedragen, zodat het netter staat
-    $kortingSom = number_format($kortingSom,2,".","");
-    $som = number_format($som,2,".","");
-    $verzend = number_format(berekenVerzend($som,$verzendKortingSom),2,".","");
-    $totaal = number_format($som + $verzend - $kortingSom,2,".","");
+    //de hoeveelheid voor verzendkosten is op dit moment een placeholder
+    $kortingSom = number_format($kortingSom,2);
+    $som = number_format($som,2);
+    $verzend = number_format(berekenVerzend($som,$verzendKortingSom),2);
+    $totaal = number_format($som + $verzend - $kortingSom,2);
 
     if($totaal<0){
         $totaal = 0;
@@ -312,6 +316,14 @@ if(!empty($cart)) {
                 <td>Totaal</td>
                 <td>€$totaal</td>
             </tr>
+            <!--
+            <tr>
+                <td> <button type='submit' form='cart' name='refresh' >Update cart</button> </td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td><button>Place order!</button></td> 
+            </tr> -->
         </table>
     </div>
     
@@ -319,29 +331,36 @@ if(!empty($cart)) {
 }
 
 if(empty($cart)){
-
-    print("
+    if(isset($_POST['order'])){
+        print("<h4 class='LeegWinkelwagen'>Bedankt voor uw bestelling</h4>");
+        unset($_POST['order']);
+    }else {
+        print("
                 <h4 class='LeegWinkelwagen'>Je winkelwagen is leeg.</h4>
             
     ");
-}//voor als er niks in de cart zit
+    }//voor als er niks in de cart zit
+}
+//gegevens per artikelen in $cart (naam, prijs, etc.) uit database halen
+//totaal prijs berekenen
+//mooi weergeven in html
+//etc.
 
-
+print("<div id='WinkelmandKnopOnder' class='KnopBovenOnder'>");
 
 if(!empty($cart)) {
     print(" 
-   <div id='WinkelmandKnopOnder' class='KnopBovenOnder'>
-            <h3 class='VerderWinkelen'><a href='browse.php' class='HrefDecoration'>verder winkelen</a></h3> 
-           <form method='post' id='FormOrder' action='order.php'>
-            <input type='hidden' name='Subtotaal' value='$som'>
-            <input type='hidden' name='Verzendkosten' value='$verzend'>
-            <input type='hidden' name='Korting' value='$kortingSom'>
-            <input type='hidden' name='Totaal' value='$totaal'>
-            <input type='submit' class='HrefDecoration' name='DoorgaanBetalen' value='Doorgaan naar betalen'></form>
-           
-        </div>
+            <h3 class='VerderWinkelen'><a href='browse.php' class='HrefDecoration'>verder winkelen</a></h3>
+            
 ");
+    if(!empty($_SESSION['UserLogin'])){
+        print("<h3 class='DoorgaanBetalen'><a href='order.php' class='HrefDecoration'>Doorgaan naar betalen</a></h3> ");
+    } else {
+        print("<h3 id='WinkelmandInlog' class='DoorgaanBetalen'><a href='login.php' class='HrefDecoration'>Inloggen</a></h3> ");
+    }
 }
+
+print("</div>");
 
 
 ?>

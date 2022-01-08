@@ -6,13 +6,10 @@
 function getVoorraadTekst($actueleVoorraad) {
     if ($actueleVoorraad > 1000) {
         return "Ruime voorraad beschikbaar.";
-    } elseif ($actueleVoorraad <= 0) {
-        return "Niet op voorraad";
     } else {
         return "Voorraad: $actueleVoorraad";
     }
 }
-
 function berekenVerkoopPrijs($adviesPrijs, $btw) {
     return $btw * $adviesPrijs / 100 + $adviesPrijs;
 }
@@ -203,12 +200,8 @@ function berekenKorting($amount,$percentage,$subtotaal){
     $korting = $subtotaal - ($amount + $percentage*$subtotaal);
     return $korting;
 }
-
 function berekenVerzend($subtotaal,$verzendkorting){
     $verzendkorting = 1-$verzendkorting/100;
-    if($verzendkorting<0){
-        $verzendkorting = 0;
-    }
     if($subtotaal > 30){
         $verzend = 0;
     }elseif($verzendkorting >= 0){
@@ -245,7 +238,6 @@ function kortingenToevoegen($kortingscode, $amount, $percentage,$verzend)
     }
 }
 //functies hoeveelheid kortingscodes
-
 function aantalKorting(){
     if(isset($_SESSION["kortingAantal"])){
         $kortingAantal = $_SESSION["kortingAantal"];
@@ -294,24 +286,7 @@ function ophalenReviews($databaseConnection, $productID) {
     return $Result;
 }
 
-function AfbeeldingSter($AantalSter){
-    if ($AantalSter == 1){
-        return ("<img src='Public/Img/1stars.png' alt='1 van 5 sterren'>");
-    } elseif ($AantalSter == 2){
-        return ("<img src='Public/Img/2stars.png' alt='2 van 5 sterren'>");
-    } elseif ($AantalSter == 3){
-        return ("<img src='Public/Img/3stars.png' alt='3 van 5 sterren'>");
-    } elseif ($AantalSter == 4){
-        return ("<img src='Public/Img/4stars.png' alt='4 van 5 sterren'>");
-    } elseif ($AantalSter == 5){
-        return ("<img src='Public/Img/5stars.png' alt='5 van 5 sterren'>");
-    } else{
-        return 0;
-    }
-}
-
 //functies accounts
-
 
 function ophalenPersonID($databaseConnection) {
     $Query = "SELECT MAX(PersonID) AS NieuwstePersonID FROM useraccounts;";
@@ -330,94 +305,30 @@ function InsertAccount ($databaseConnection, $UserName, $EmailAddress, $HashedPa
     mysqli_stmt_execute($Statement);
 }
 
-function CheckCityName($databaseConnection, $CityName){
-    $sql = "SELECT CityID FROM cities WHERE CityName LIKE ? LIMIT 1;";
-    $Statement = mysqli_prepare($databaseConnection, $sql);
-    mysqli_stmt_bind_param($Statement, "s", $CityName);
-    mysqli_stmt_execute($Statement);
-    mysqli_stmt_store_result($Statement);
-    if($Statement->num_rows == 1) {
-        mysqli_stmt_bind_result($Statement, $CityID);
-        mysqli_stmt_fetch($Statement);
-        mysqli_stmt_close($Statement);
-        return $CityID;
-    } else {
-        return false;
+/*
+        $databaseConnection = connectToDatabase();
+------------------------------------------------------Deze variabelen moet gevuld worden met de info die de gebruiker invult
+        $UserName = "test";
+        $EmailAddress = 'test@gmail.com';
+        $HashedPassword = '123';
+        $PhoneNumber = '1';
+        $DeliveryCityID = 38212;
+        $DeliveryPostalCode = '123';
+        $DeliveryAddress = "teststraat";
+------------------------------------------------------Deze variabelen moet gevuld worden met de info die de gebruiker invult
+Dit is de regel waar de funcie wordt aangeroepen: InsertAccount($databaseConnection, $PersonID, $UserName, $EmailAddress, $HashedPassword, $PhoneNumber, $DeliveryCityID, $DeliveryPostalCode, $DeliveryAddress);
+Voor cityID moet een check worden gedaan om te zien of die in de database bestaat dat kan met deze query:
+
+$sql = "SELECT CityID FROM cities WHERE CityName LIKE ? LIMIT 1;";
+            $Statement = mysqli_prepare($databaseConnection, $sql);
+            mysqli_stmt_bind_param($Statement, "s", $PostPlaats);
+            mysqli_stmt_execute($Statement);
+            mysqli_stmt_store_result($Statement);
+            if($Statement->num_rows == 1) {
+            //Hier ga je verder met je code als het de ingevulde plaats in de database bestaat.
     }
-}
-
-function ophalenNewOrderID($databaseConnection)
-{
-    $Query = "SELECT MAX(OrderID) AS NieuwsteOrderID FROM neworders;";
-    $Result = mysqli_query($databaseConnection, $Query);
-    $Result = mysqli_fetch_array($Result, MYSQLI_ASSOC);
-    return $Result;
-}
-
-function CreateNewOrder($databaseConnection, $SubTotaal, $Verzendkosten, $Korting, $Totaal, $DeliveryAddress, $DeliveryCityID, $DeliveryPostalCode, $PhoneNumber, $UserName){
-    $NewOrderID = ophalenNewOrderID($databaseConnection);
-    $nieuwsteNewOrderID = $NewOrderID['NieuwsteOrderID'] + 1;
-    if (isset($_SESSION['UserLogin'])){
-        $NewPersonID = $_SESSION['UserLogin'];
-    } else {
-        $NewPersonID = 0;
-    }
-    $sql = "INSERT INTO neworders (OrderID, PersonID, OrderDate, SubTotaal, Verzendkosten, Korting, Totaal, DeliveryAddress, DeliveryCityID, DeliveryPostalCode, PhoneNumber, UserName)
-    VALUES ($nieuwsteNewOrderID, $NewPersonID , current_date(), ?, ?, ?, ?, ?, ?, ?, ?, ? )";
-    $Statement = mysqli_prepare($databaseConnection, $sql);
-    mysqli_stmt_bind_param($Statement,"ddddsisss",$SubTotaal, $Verzendkosten, $Korting, $Totaal, $DeliveryAddress, $DeliveryCityID, $DeliveryPostalCode, $PhoneNumber, $UserName);
-    mysqli_stmt_execute($Statement);
-}
-
-function OphalenNewOrderLineID($databaseConnection){
-    $Query = "SELECT MAX(OrderLineID) AS NieuwsteOrderLineID FROM neworderlines;";
-    $Result = mysqli_query($databaseConnection, $Query);
-    $Result = mysqli_fetch_array($Result, MYSQLI_ASSOC);
-    return $Result;
-}
-
-function CreateNewOrderLine($databaseConnection, $StockItemID, $Description, $Quantity, $UnitPrice, $TaxRate){
-    $NewOrderLineID = OphalenNewOrderLineID($databaseConnection);
-    $NieuwsteNewOrderLineID = $NewOrderLineID['NieuwsteOrderLineID'] + 1;
-    $NewOrderID = ophalenNewOrderID($databaseConnection);
-    $StringNewOrderID = $NewOrderID['NieuwsteOrderID'];
-    $sql = "INSERT INTO neworderlines (OrderlineID, OrderID, StockItemID, Description, Quantity, UnitPrice, TaxRate)
-    VALUES ($NieuwsteNewOrderLineID, $StringNewOrderID, ?, ?, ?, ?, ?);";
-    $Statement = mysqli_prepare($databaseConnection, $sql);
-    mysqli_stmt_bind_param($Statement, "isidd", $StockItemID, $Description, $Quantity, $UnitPrice, $TaxRate);
-    mysqli_stmt_execute($Statement);
-}
-
-function AdresKlantOphalen($databaseConnection){
-    $sql = "SELECT us.UserName, us.DeliveryAddress, ci.CityName, us.DeliveryPostalCode, us.PhoneNumber, us.DeliveryCityID FROM useraccounts us JOIN cities ci ON us.DeliveryCityID = ci.CityID WHERE us.PersonID = ? LIMIT 1";
-    $Statement = mysqli_prepare($databaseConnection, $sql);
-    mysqli_stmt_bind_param($Statement, "i", $_SESSION['UserLogin']);
-    mysqli_stmt_execute($Statement);
-    mysqli_stmt_store_result($Statement);
-    if ($Statement->num_rows == 1) {
-        mysqli_stmt_bind_result($Statement, $naam, $adres, $plaats, $postcode, $telefoonnummer, $cityid);
-        mysqli_stmt_fetch($Statement);
-        mysqli_stmt_close($Statement);
-        return array($naam, $adres, $plaats, $postcode, $telefoonnummer, $cityid);
-    } else{
-        return false;
-    }
-}
-
-function VeranderAdres($databaseConnection, $Adres, $CityID, $Postcode, $Telnummer, $UserName , $PersonID ){
-    $sql ="UPDATE useraccounts SET DeliveryAddress = ?, DeliveryCityID = ?, DeliveryPostalCode = ?, PhoneNumber = ?, UserName =? WHERE PersonID = ?;";
-    $Statement = mysqli_prepare($databaseConnection, $sql);
-    mysqli_stmt_bind_param($Statement, "sisssi", $Adres, $CityID, $Postcode, $Telnummer, $UserName, $PersonID );
-    mysqli_stmt_execute($Statement);
-
-}
-
-function tempratuurophalen ($databaseConnection){
-    $Query = "SELECT temperature FROM coldroomtemperatures ORDER BY ColdRoomTemperatureID DESC;";
-    $Result = mysqli_query($databaseConnection, $Query);
-    $Result = mysqli_fetch_array($Result, MYSQLI_ASSOC);
-    return $Result;
-}
+Als je er niet uitkomt met het controleren van cityid sla de controleren dan maar over en vul maar gwn het nummer in dat de user dan geeft (geen tekst want dat accepteert de database niet).
+*/
 
 ?>
 

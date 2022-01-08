@@ -5,206 +5,128 @@ $cart = getCart();
 ?>
 
 <!DOCTYPE html>
-<html lang="nl" xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html">
+<html lang="nl">
 <head>
     <meta charset="UTF-8">
-    <title>NerdyGadgets</title>
+    <title>Winkelwagen</title>
 </head>
+
+<?php if(isset($_GET['error'])) { ?>
+    <div class="AlertVeldInloggen">
+        <?php print(htmlspecialchars($_GET['error'], ENT_QUOTES, 'UTF-8'));?>
+    </div>
+<?php } ?>
     <body>
 
-    <?php if(isset($_GET['error'])) { //Voor errors te laten zien ?>
-        <div id="AlertOrder" class="Alert">
-            <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
-            <?php print(htmlspecialchars($_GET['error'], ENT_QUOTES, 'UTF-8'));?>
-        </div>
-    <?php } ?>
+    <?php
 
-    <?php //Als winkelwagen leeg is wordt je naar index gestuurd.
-    if (empty($_SESSION['cart'])){
+    if(!isset($_SESSION['UserLogin']) || $_SESSION['cart'] == array()){
         header("location: index.php");
         exit();
     }
 
-    if (isset($_SESSION['UserLogin'])){ //Adres gegevens ophalen als klant is ingelogd.
-        list($KlantNaam,$KlantAdres,$KlantPlaats,$KlantPostcode,$KlantTelNmr, $KlantCityID) = AdresKlantOphalen($databaseConnection);
-    }
-
-    if (isset($_POST['DoorgaanBetalen'])) { // Zet de bedragen in sessions zodat ze niet weg worden gehaald als je de form voor order submit drukt.
-        $_SESSION['Subtotaal'] = $_POST['Subtotaal'];
-        $_SESSION['Verzendkosten'] = $_POST['Verzendkosten'];
-        $_SESSION['Korting'] = $_POST['Korting'];
-        $_SESSION['Totaal'] = $_POST['Totaal'];
-    }
-
-
-    if (isset($_POST['order']) || isset($_POST['GeenAccountOrder']) ) { //Order plaatsen
-        if (isset($_POST['order'])){ //Als de klant ingelogd is gebruikt die de opgeslagen adres gegevens
-            $DeliveryAddress = $KlantAdres;
-            $DeliveryCityID = $KlantCityID;
-            $DeliveryPostalCode = $KlantPostcode;
-            $PhoneNumber = $KlantTelNmr;
-            $UserName = $KlantNaam;
-        } elseif (isset($_POST['GeenAccountOrder'])){ //als de klant niet ingelogd is gebruikt die de ingevulde adres gegevens
-            if (empty($_POST['GeenUsername']) || empty($_POST['GeenAdres']) || empty($_POST['GeenPlaats']) || empty($_POST['GeenPostcode']) || empty($_POST['GeenTelNummer'])){ //check of alle velden zijn ingevuld
-                header("location: order.php?error=Niet alle velden zijn ingevuld");
-                exit();
-            } elseif (!preg_match("/^[1-9][0-9]{3}\s[a-zA-Z]{2}$/",$_POST['GeenPostcode'])) {
-                header("location: order.php?error=Geef een geldige postcode op");
-                exit();
-            }else {
-                if (CheckCityName($databaseConnection, $_POST['GeenPlaats']) != false){ //check als de plaatsnaam wel in de database staat
-                    $CityID = CheckCityName($databaseConnection, $_POST['GeenPlaats']);
-                    $DeliveryAddress = $_POST['GeenAdres'];
-                    $DeliveryCityID = $CityID;
-                    $DeliveryPostalCode = $_POST['GeenPostcode'];
-                    $PhoneNumber = $_POST['GeenTelNummer'];
-                    $UserName = $_POST['GeenUsername'];
-                } else{ //plaatsnaam staat niet in de database dus geeft die error mee in de header
-                    header("location: order.php?error=Geef een geldige plaatsnaam op");
-                    exit();
-                }
-            }
-        } //Order in de database zetten
-        mysqli_begin_transaction($databaseConnection);
-        try {
-            CreateNewOrder($databaseConnection, $_SESSION['Subtotaal'], $_SESSION['Verzendkosten'], $_SESSION['Korting'], $_SESSION['Totaal'], $DeliveryAddress, $DeliveryCityID, $DeliveryPostalCode, $PhoneNumber, $UserName);
-            foreach ($cart as $productID => $Quantity) { //Orderlines aanmaken en stock bijwerken
-                $product = ophalenProduct($databaseConnection, $productID);
-                CreateNewOrderLine($databaseConnection, $product['StockItemID'], $product['StockItemName'], $Quantity, $product['UnitPrice'], $product['TaxRate']);
-                gegevensUpdaten($databaseConnection, $Quantity, $productID);
-            }
-             mysqli_commit($databaseConnection);
-            } catch (mysqli_sql_exception $exception){
-                mysqli_rollback($databaseConnection);
-                throw $exception;
-            }
-        unset($_SESSION['Subtotaal']);
-        unset($_SESSION['Verzendkosten']);
-        unset($_SESSION['Korting']);
-        unset($_SESSION['Totaal']);
-        $_SESSION['CompletedOrder'] = 1;
-        header("location: ordercomplete.php");
-        exit();
-    }
-
-    if (isset($_POST['verandergegevens'])) { //Order plaatsen voor ingelogde klant en adres veranderen.
-        $UserName = $_POST['VeranderUsername'];
-        $DeliveryAddress = $_POST['VeranderAdres'];
-        $City = $_POST['VeranderPlaats'];
-        $DeliveryPostalCode = $_POST['VeranderPostcode'];
-        $PhoneNumber = $_POST['VeranderTelefoonnummer'];
-        if (empty($DeliveryAddress) || empty($City) || empty($DeliveryPostalCode) || empty($PhoneNumber) || empty($UserName)) { //checken of er legen velden zijn
-            header("location: order.php?error=Niet alle velden zijn ingevuld");
+    if (isset($_SESSION['UserLogin'])) {
+        $sql = "SELECT us.UserName, us.DeliveryAddress, ci.CityName, us.DeliveryPostalCode, us.PhoneNumber FROM useraccounts us JOIN cities ci ON us.DeliveryCityID = ci.CityID WHERE us.PersonID = ? LIMIT 1";
+        $Statement = mysqli_stmt_init($databaseConnection);
+        if (!mysqli_stmt_prepare($Statement, $sql)) {
+            header("location: order.php?error=SQL error");
             exit();
-        } elseif (CheckCityName($databaseConnection, $City) == false) { //checken of de plaats in de database staat
-            header("location: order.php?error=Geef een geldige plaatsnaam op");
-            exit();
-        } elseif (!preg_match("/^[1-9][0-9]{3}\s[a-zA-Z]{2}$/",$DeliveryPostalCode)){
-            header("location: order.php?error=Geef een geldige postcode op");
-            exit();
-        } else { //order plaatsen en adres gegevens veranderen
-            $CityID = CheckCityName($databaseConnection, $City);
-            mysqli_begin_transaction($databaseConnection);
-            try {
-                VeranderAdres($databaseConnection, $DeliveryAddress, $CityID, $DeliveryPostalCode, $PhoneNumber, $UserName, $_SESSION['UserLogin']);
-                CreateNewOrder($databaseConnection, $_SESSION['Subtotaal'], $_SESSION['Verzendkosten'], $_SESSION['Korting'], $_SESSION['Totaal'], $DeliveryAddress, $CityID, $DeliveryPostalCode, $PhoneNumber, $UserName);
-                foreach ($cart as $productID => $Quantity) {
-                    $product = ophalenProduct($databaseConnection, $productID);
-                    CreateNewOrderLine($databaseConnection, $product['StockItemID'], $product['StockItemName'], $Quantity, $product['UnitPrice'], $product['TaxRate']);
-                    gegevensUpdaten($databaseConnection, $Quantity, $productID);
-                }
-                mysqli_commit($databaseConnection);
-            } catch (mysqli_sql_exception $exception){
-                mysqli_rollback($databaseConnection);
-                throw $exception;
+        } else {
+            mysqli_stmt_bind_param($Statement, "i", $_SESSION['UserLogin']);
+            mysqli_stmt_execute($Statement);
+            mysqli_stmt_store_result($Statement);
+            if ($Statement->num_rows == 1) {
+                mysqli_stmt_bind_result($Statement, $naam, $adres, $plaats, $postcode, $telefoonnummer);
+                mysqli_stmt_fetch($Statement);
+                mysqli_stmt_close($Statement);
             }
-            unset($_SESSION['Subtotaal']);
-            unset($_SESSION['Verzendkosten']);
-            unset($_SESSION['Korting']);
-            unset($_SESSION['Totaal']);
-            $_SESSION['UserName'] = $UserName;
-            $_SESSION['CompletedOrder'] = 1;
-            header("location: ordercomplete.php");
-            exit();
         }
     }
 
-    if (!isset($_POST['DoorgaanBetalen']) && !isset($_GET['error'])){ //Als je hier niet via de winkelmand komt wordt je naar index gestuurd.
-        header("location: index.php");
-        exit();
+    if (isset($_POST['order'])) {
+        $deliveryDate = date('Y-m-d', strtotime(date("Y-m-d"). ' + 3 days'));
+        createOrder($databaseConnection, $_SESSION['UserLogin'], 2, 1, 2, 62162, date("Y-m-d"), $deliveryDate, 18507, 1, "Hallo Douwe en Puja", "Pleur door de brievenbus", "Existence is pain", 7, date("Y-m-d H:i:s"));
+        foreach ($cart as $productID => $aantal) {
+            $product = ophalenProduct($databaseConnection, $productID);
+            createOrderLine($databaseConnection, $product['StockItemID'], $product['StockItemName'], 7, $aantal, $product['UnitPrice'], $product['TaxRate'], $aantal, 7, date("Y-m-d H:i:s"));
+            gegevensUpdaten($databaseConnection, $aantal, $productID);
+        }
+        $_SESSION['CompletedOrder'] = 1;
+        header("location: ordercomplete.php");
+    }
+
+    if(isset($_POST['verandergegevens'])){
+    $PostAdres = $_POST['adres'];
+    $PostPlaats = $_POST['plaats'];
+    $PostPostcode = $_POST['postcode'];
+    $PostTelnummer = $_POST['telefoonnummer'];
+        if (empty($PostAdres) || empty($PostPlaats) || empty($PostPostcode) || empty($PostTelnummer)) {
+            header("location: order.php?error=Niet alle velden zijn ingevuld");
+        } else {
+            $sql = "SELECT CityID FROM cities WHERE CityName LIKE ? LIMIT 1;";
+            $Statement = mysqli_prepare($databaseConnection, $sql);
+            mysqli_stmt_bind_param($Statement, "s", $PostPlaats);
+            mysqli_stmt_execute($Statement);
+            mysqli_stmt_store_result($Statement);
+            if($Statement->num_rows == 1) {
+                mysqli_stmt_bind_result($Statement, $CityID);
+                mysqli_stmt_fetch($Statement);
+                mysqli_stmt_close($Statement);
+                $sql ="UPDATE useraccounts SET DeliveryAddress = ?, DeliveryCityID = ?, DeliveryPostalCode = ?, PhoneNumber = ? WHERE PersonID = ?;";
+                $Statement = mysqli_prepare($databaseConnection, $sql);
+                mysqli_stmt_bind_param($Statement, "sissi", $PostAdres, $CityID, $PostPostcode, $PostTelnummer, $_SESSION['UserLogin']);
+                mysqli_stmt_execute($Statement);
+                $deliveryDate = date('Y-m-d', strtotime(date("Y-m-d"). ' + 3 days'));
+                    createOrder($databaseConnection, $_SESSION['UserLogin'], 2, 1, 2, 62162, date("Y-m-d"), $deliveryDate, 18507, 1, "Hallo Douwe en Puja", "Pleur door de brievenbus", "Existence is pain", 7, date("Y-m-d H:i:s"));
+                    foreach ($cart as $productID => $aantal) {
+                    $product = ophalenProduct($databaseConnection, $productID);
+                    createOrderLine($databaseConnection, $product['StockItemID'], $product['StockItemName'], 7, $aantal, $product['UnitPrice'], $product['TaxRate'], $aantal, 7, date("Y-m-d H:i:s"));
+                    gegevensUpdaten($databaseConnection, $aantal, $productID);
+                    $_SESSION['CompletedOrder'] = 1;
+                    header("location: ordercomplete.php");
+                }
+            } else {
+                header("location: order.php?error=Geef een geldige plaatsnaam op");
+            }
+        }
     }
 
 
-    if (!isset($_SESSION['UserLogin'])){ //html print voor als de klant niet ingelogd is.
-        print('
-        
-         <div class="OrderContainer">
-            <div class="BezorgAdres">
-                <h1>Bezorgadres</h1>
-                <div class="PlaceOrderForm">
-                <div class="AdresVeranderen">
-                    <form method="POST" id="cart">
-                        <label for="OrderUsername">Naam</label>
-                        <input type="text" maxlength="50" id="OrderUsername" name="GeenUsername" placeholder="Naam">
-                        <label for="OrderAdres">Adres</label>
-                        <input type="text" maxlength="100" id="OrderAdres" name="GeenAdres" placeholder="Adres">
-                        <label for="OrderPlaats">Plaats</label>
-                        <input type="text" maxlength="100" id="OrderPlaats" name="GeenPlaats" placeholder="Plaats">
-                        <label for="OrderPostcode">Postcode</label>
-                        <input type="text" maxlength="100" id="OrderPostcode" name="GeenPostcode" placeholder="Postcode">
-                        <label for="OrderTelefoon">Telefoonnummer</label>
-                        <input type="text" maxlength="100" id="OrderTelefoon" name="GeenTelNummer" placeholder="Telefoonnummer">
-                        <button type="submit" form="cart" name="GeenAccountOrder">Plaats bestelling</button>
-                    </form>
-                    </div>
-                </div>
-            </div>
-         </div>
-        
-        ');
-    }
-
-    if (isset($_SESSION['UserLogin'])){ //html print voor als de klant ingelogd is.
-        print('
+    ?>
         <div class="OrderContainer">
             <div class="BezorgAdres">
-                <h1>Bezorgadres</h1>
+                <h1>BezorgAdres</h1>
                 <h3>Kloppen deze gegevens?</h3>
-                ');
-        print $KlantNaam . '<br>' . $KlantAdres . '<br>' . $KlantPlaats . '<br>' . $KlantPostcode . '<br>' . "Telefoonnummer: " . $KlantTelNmr;
-
-        print ('
+                <?php
+                print($naam . '<br>');
+                print($adres . '<br>');
+                print($postcode . ", ");
+                print($plaats . '<br>');
+                print("Telefoon: " . $telefoonnummer . '<br>');
+                ?>
                 <div class="PlaceOrderForm">
-                    <form method="post" id="cart">
+                    <form method='post' id='cart'>
                         <label for="cart">Ja deze gegevens kloppen</label>
-                        <button type="submit" form="cart" name="order">Plaats bestelling</button>
+                        <button type='submit' form='cart' name='order'>Plaats bestelling</button>
                     </form>
                 </div>
             </div>
             <div class="AdresVeranderen">
-                <h3>Gegevens veranderen</h3>
+                <h3>Adres gegevens veranderen</h3>
                 <form action="#" method="POST">
-                    <label for="OrderUsername">Naam</label>
-                    <input type="text" maxlength="50" id="OrderUsername" name="VeranderUsername" placeholder="Naam">
                     <label for="OrderAdres">Adres</label>
-                    <input type="text" maxlength="100" id="OrderAdres" name="VeranderAdres" placeholder="Adres">
+                    <input type="text" maxlength="100" id="OrderAdres" name="adres" placeholder="Adres">
                     <label for="OrderPlaats">Plaats</label>
-                    <input type="text" maxlength="100" id="OrderPlaats" name="VeranderPlaats" placeholder="Plaats">
+                    <input type="text" maxlength="100" id="OrderPlaats" name="plaats" placeholder="Plaats">
                     <label for="OrderPostcode">Postcode</label>
-                    <input type="text" maxlength="100" id="OrderPostcode" name="VeranderPostcode" placeholder="Postcode">
+                    <input type="text" maxlength="100" id="OrderPostcode" name="postcode" placeholder="Postcode">
                     <label for="OrderTelefoon">Telefoonnummer</label>
-                    <input type="text" maxlength="100" id="OrderTelefoon" name="VeranderTelefoonnummer" placeholder="Telefoonnummer">
+                    <input type="text" maxlength="100" id="OrderTelefoon" name="telefoonnummer" placeholder="Telefoonnummer">
                     <label for="VeranderGegevens">Verander gegevens en plaats bestelling</label>
                     <button type="submit" id="VeranderGegevens" name="verandergegevens"><span>Plaats bestelling</span></button>
                 </form>
             </div>
         </div>
-        ');
-    }
-
-    ?>
-
-
-
     </body>
 </html>
+
