@@ -29,7 +29,6 @@ if (isset($_POST['signup_submit'])) {
     $straat = $_POST["straat"];
     $afleveradres = "$straat $huisnummer";
     $plaats = $_POST ["plaats"];
-    $gbdatum = $_POST ["datum"];
     $telefoonnummer = $_POST["nmr"];
     $email = $_POST["mail"];
     $DeliveryCityID = $_POST ["plaats"];
@@ -41,7 +40,9 @@ if (isset($_POST['signup_submit'])) {
     $pccheck = false;
     $leegeveldencheck = false;
     $citycheck = false;
-    $nieuwsbrief = $_POST['nbbox'];
+    if (isset($_POST['nbbox'])){
+        $nieuwsbrief = $_POST['nbbox'];
+    }
 
 
 
