@@ -8,18 +8,20 @@ $cart = getCart();
 <html lang="nl">
 <head>
     <meta charset="UTF-8">
-    <title>Winkelwagen</title>
+    <title>NerdyGadgets</title>
 </head>
     <body>
     <?php
-    if ($_SESSION['CompletedOrder'] != 1){
+    if ($_SESSION['CompletedOrder'] != 1){ //zodat je niet naar ordercomplete.php kunt zonder dat je een bestelling hebt geplaatst
         header("location: index.php");
     } else {
-        $_SESSION['cart'] = array();
+        $_SESSION['cart'] = array(); //maakt cart leeg
+        unset($_SESSION['korting']);
         $_SESSION['CompletedOrder'] = 0;
     }
     ?>
 
     <h1>Order is geplaatst</h1>
+
     </body>
 </html>

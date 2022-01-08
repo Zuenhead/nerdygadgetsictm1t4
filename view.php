@@ -10,8 +10,15 @@ if(isset($StockItem)) {
     $Stock = filter_var($StockItem["QuantityOnHand"], FILTER_SANITIZE_NUMBER_INT); //$StockItem geeft voor de voorraad "voorraad: x" dit haalt het nummer eruit
 }
 
+$tempratuur = tempratuurophalen($databaseConnection);
+print_r($tempratuur);
+
+if (empty($ItemID)){
+    header("location: index.php");
+}
 
 ?>
+
 <div id="CenteredContent">
     <?php
     if ($StockItem != null) {
@@ -106,7 +113,6 @@ if(isset($StockItem)) {
                     <input type="submit" id="ImageButton" name="submit" value="Add to cart">
                 </form>
                 <?php
-                //pas op: functies aangepast!
                 if (isset($_POST["submit"])) {              // zelfafhandelend formulier
                     $amount = (int)$_POST["amount"] ;
                     if($_POST['amount'] > 0) {
@@ -170,30 +176,27 @@ if(isset($StockItem)) {
 
         </div>
 
-
-
-
-        <table id="alternatieven">
             <?php  $alternatieven = array(alternatiefOphalen($databaseConnection,$ItemID));
-            print("<tr>");
+            if (!empty($alternatieven[0])) {
+                print ("<table id='alternatieven'>");
+                print (" <tr> <th class='AlterHeader'>Alternatieven</th> </tr> ");
+                print("<tr>");
+            }
             for($i=0; $i<3; $i++) {
                 if (isset($alternatieven[0][$i]['stockitemid'])){
                     $afbeelding = $alternatieven[0][$i]["imagepath"];
-                    print("<th> <a href='view.php?id=" . $alternatieven[0][$i]['stockitemid'] ."'> <img src='Public/StockItemIMG/" . $afbeelding . "' width='50%' alt='test'><br>" .
-                        $alternatieven[0][$i]['stockitemname'] . "<br> € " . number_format($alternatieven[0][$i]['SellPrice'], 2,".",",") . "</th>");
+                    print("<th> <a class='HrefDecoration' href='view.php?id=" . $alternatieven[0][$i]['stockitemid'] ."'> <img src='Public/StockItemIMG/" . $afbeelding . "'  alt=". $alternatieven[0][$i]['stockitemid'] . "><br>" .
+                      "<div class='AlterText'> " . $alternatieven[0][$i]['stockitemname'] . "</div>" . "<div class='AlterPrijs'>" . "<br> € " . number_format($alternatieven[0][$i]['SellPrice'], 2,".",",")  . "</div>" . "</th>");
 
-
-                }elseif($i == 0){
-                    print("Sorry, er zijn geen gerelateerde producten");
                 }
             }
 
-            print("</tr> </table>")/**/
+        if (!empty($alternatieven[0])){
+            print("</tr> </table>");
+        }
+
             ?>
 
-
-
-        </table>
         <?php
     } else {
         ?><h2 id="ProductNotFound">Het opgevraagde product is niet gevonden.</h2><?php
@@ -204,50 +207,58 @@ if(isset($StockItem)) {
 
 
 </div>
-<form method="post">
-    <h4>Rating:</h4>
-    <input type="radio" name="review_rating" id="1_ster" value="1_ster" required>
-    <label for="1_ster">★</label>
-    <input type="radio" name="review_rating" id="2_ster" value="2_ster" required>
-    <label for="2_ster">★★</label>
-    <input type="radio" name="review_rating" id="3_ster" value="3_ster" required>
-    <label for="3_ster">★★★</label>
-    <input type="radio" name="review_rating" id="4_ster" value="4_ster" required>
-    <label for="4_ster">★★★★</label>
-    <input type="radio" name="review_rating" id="5_ster" value="5_ster" required>
-    <label for="5_ster">★★★★★</label>
-    <h4>Titel:</h4>
-    <input type="text" name="review_titel" id="review_titel" class="form-submit">
-    <h4>Beschrijving:</h4>
-    <input type="text" name="review_beschrijving" id="review_beschrijving" class="form-submit">
-    <input type="submit" name="review_submit" id="review_submit" class="form-submit" value="Verzenden">
-</form>
+
 <?php
-if (isset($_POST['review_submit'])) {
-    $titel = $_POST['review_titel'];
-    $beschrijving = $_POST['review_beschrijving'];
-    if ($_POST['review_rating'] == "1_ster") {
-        $rating = 1;
-    } elseif ($_POST['review_rating'] == "2_ster") {
-        $rating = 2;
-    } elseif ($_POST['review_rating'] == "3_ster") {
-        $rating = 3;
-    } elseif ($_POST['review_rating'] == "4_ster") {
-        $rating = 4;
-    } elseif ($_POST['review_rating'] == "5_ster") {
-        $rating = 5;
-    } else {
-        echo "Ongeldige sterbeoordeling.";
-        $rating = NULL;
-    }
-    insertReview($databaseConnection, $_SESSION['UserLogin'], $ItemID, $rating, $titel, $beschrijving);
-}
+if (isset($_SESSION['UserLogin'])){
+    print "
+<div class='ContainerRating'>
+    <form method='post' action='reviewcheck.php'>
+    <input type='hidden' value='$ItemID' name='ItemID'>
+        <h3>Recensie plaatsen</h3>
+        <h5>Hoe bevalt het product?</h5>
+        <div class='SterRating'>
+            <input type='radio' name='review_rating' id='5_ster' value='5_ster' required>
+            <label for='5_ster'></label>
+            <input type='radio' name='review_rating' id='4_ster' value='4_ster' required>
+            <label for='4_ster'></label>
+            <input type='radio' name='review_rating' id='3_ster' value='3_ster' required>
+            <label for='3_ster'></label>
+            <input type='radio' name='review_rating' id='2_ster' value='2_ster' required>
+            <label for='2_ster'></label>
+            <input type='radio' name='review_rating' id='1_ster' value='1_ster' required>
+            <label for='1_ster'></label>
+        </div>
+        <hr>
+        <h5>Titel</h5>
+        <input type='text' name='review_titel' id='review_titel' class='RatingTitel' placeholder='Een korte titel voor de recensie.' required>
+        <hr>
+        <h5>Recensie</h5>
+        <textarea rows='20' cols='5' name='review_beschrijving' id='review_beschrijving' class='RatingRecensie' placeholder='Wat vond u wel of niet goed aan het product?' required></textarea>
+        <input type='submit' name='review_submit' id='review_submit' value='Recensie plaatsen'>
+    </form>
+</div>
+"; }
 
 $reviewsArray = ophalenReviews($databaseConnection, $ItemID);
-foreach ($reviewsArray as $reviews) {
-    print "<br>";
-    foreach ($reviews as $review) {
-        print "$review<br>";
-    }
+
+if (!empty($reviewsArray)){
+    print ("<div class='ContainerReviews'>");
+    print ("<h1>Klantenrecensies</h1>");
 }
+
+foreach ($reviewsArray as $reviews){
+    $reviewnaam = $reviews['UserName'];
+    $reviewrating = AfbeeldingSter($reviews['Rating']);
+    $reviewtitle = $reviews['Title'];
+    $reviewcomment = $reviews['Comment'];
+    print("<div class='IndividueleReview'>");
+    print("<div class='ReviewRating'>$reviewrating</div>");
+    print("<div class='ReviewTitle'>$reviewtitle</div>");
+    print("<div class='ReviewNaam'>$reviewnaam</div>");
+    print("<div class='ReviewComment'>$reviewcomment</div>");
+    print ("<hr>");
+    print("</div>");
+}
+print ("</div>");
+
 ?>

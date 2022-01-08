@@ -2,6 +2,16 @@
 
 include __DIR__ . "/header.php";
 
+//verwijzing naar PHPMailer
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+
+require 'PHPMailer/src/Exception.php';
+require 'PHPMailer/src/PHPMailer.php';
+require 'PHPMailer/src/SMTP.php';
+
+$mail = new PHPMailer(true);
+
 if (isset($_SESSION['UserLogin'])) {
     header("location: index.php");
 }
@@ -31,8 +41,7 @@ if (isset($_POST['signup_submit'])) {
     $pccheck = false;
     $leegeveldencheck = false;
     $citycheck = false;
-
-
+    $nieuwsbrief = $_POST['nbbox'];
 
 
 
@@ -77,7 +86,17 @@ if (empty($vnaam) || empty($anaam)  || empty($huisnummer) || empty($straat) || e
 
 # controleren of alle checks true zijn en dan hoppa door na de database
     if ($mailcheck == true && $wwcheck == true && $pccheck == true && $leegeveldencheck == true && $citycheck == true) {
-        InsertAccount($databaseConnection, $naam, $email, $EncryptPassword, $telefoonnummer, $DeliveryCityID, $postcode, $afleveradres);
+        //check of nieuwsbrief checkbox wel TRUE of FALSE is, als dat niet het geval is wordt nieuwsbrief NULL en insert het niet in de database vanwege de NOT NULL constraint
+        if ($nieuwsbrief == FALSE) {
+            $nieuwsbrief = 0;
+        } elseif ($nieuwsbrief == TRUE) {
+            $nieuwsbrief = 1;
+            aanmeldingNieuwsbrief($mail, $email);
+        } else {
+            $nieuwsbrief = NULL;
+            echo "Geen tekst bij nieuwsbrief mogelijk.<br>";
+        }
+        InsertAccount($databaseConnection, $naam, $email, $EncryptPassword, $telefoonnummer, $DeliveryCityID, $postcode, $afleveradres, $nieuwsbrief);
         header("location: login.php?succes=Account registeren gelukt!");
     }
 }
@@ -121,6 +140,9 @@ if (empty($vnaam) || empty($anaam)  || empty($huisnummer) || empty($straat) || e
 
                 <label type="pwdhh">Herhaal wachtwoord</label>
                 <input type="password" id="pwdhh" name="pwd-repeat" placeholder="Herhaal wachtwoord" required>
+
+                <input type="checkbox" id="nbbox" name="nbbox" value="nieuwsbrief">
+                <label for="nbbox">Ik wil mijzelf aanmelden voor de nieuwsbrief.</label>
 
                 <button type="submit" name="signup_submit">account aanmaken</button>
             </form>

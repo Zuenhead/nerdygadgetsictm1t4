@@ -46,27 +46,5 @@ if(isset($_POST['email']) && isset($_POST['password'])) {
     header("location: index.php");
 }
 
-/*
-   $Query = "SELECT PersonID, FullName FROM people_archive WHERE EmailAddress=? AND HashedPassword=? LIMIT 1";
-            $Statement = mysqli_prepare($databaseConnection, $Query);
-            mysqli_stmt_bind_param($Statement, "ss", $email, $password);
-            mysqli_stmt_execute($Statement);
-            mysqli_stmt_store_result($Statement);
-
-            if($Statement->num_rows == 1)
-            {
-                mysqli_stmt_bind_result($Statement, $PersonID, $FullName);
-                mysqli_stmt_fetch($Statement);
-                mysqli_stmt_close($Statement);
-                $_SESSION['UserLogin'] = $PersonID;
-                $_SESSION['FullName'] = $FullName;
-                print_r($_SESSION);
-            } else{
-                header("location: login.php?error=Verkeerd E-mail of wachtwoord");
-            }
-
- */
-
-
 ?>
 
