@@ -1,12 +1,11 @@
-use nerdygadgets;
 -- phpMyAdmin SQL Dump
 -- version 5.1.1
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Gegenereerd op: 18 dec 2021 om 16:26
--- Serverversie: 10.4.21-MariaDB
--- PHP-versie: 8.0.10
+-- Generation Time: Jan 08, 2022 at 09:22 PM
+-- Server version: 10.4.21-MariaDB
+-- PHP Version: 8.0.11
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -25,9 +24,9 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
--- Tabelstructuur voor tabel `useraccounts`
+-- Table structure for table `useraccounts`
 --
-drop table if exists `useraccounts`;
+
 CREATE TABLE `useraccounts` (
   `PersonID` int(11) NOT NULL,
   `UserName` varchar(50) NOT NULL,
@@ -36,22 +35,24 @@ CREATE TABLE `useraccounts` (
   `PhoneNumber` varchar(20) NOT NULL,
   `DeliveryCityID` int(11) NOT NULL,
   `DeliveryPostalCode` varchar(11) NOT NULL,
-  `DeliveryAddress` varchar(100) NOT NULL
+  `DeliveryAddress` varchar(100) NOT NULL,
+  `Nieuwsbrief` tinyint(1) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
--- Gegevens worden geëxporteerd voor tabel `useraccounts`
+-- Dumping data for table `useraccounts`
 --
 
-INSERT INTO `useraccounts` (`PersonID`, `UserName`, `EmailAddress`, `HashedPassword`, `PhoneNumber`, `DeliveryCityID`, `DeliveryPostalCode`, `DeliveryAddress`) VALUES
-(4001, 'Mike Oxmaul', 'demo@gmail.com', '$2y$10$LzqMMuYNwx2vR7O7O80jGuq1//8nWQSlWKKcXc.pJYfCvjOggryKK', '0800- 0432', 38212, '6114HC', 'De Wallen 69');
+INSERT INTO `useraccounts` (`PersonID`, `UserName`, `EmailAddress`, `HashedPassword`, `PhoneNumber`, `DeliveryCityID`, `DeliveryPostalCode`, `DeliveryAddress`, `Nieuwsbrief`) VALUES
+(4001, 'Mike Oxmaul', 'demo@gmail.com', '$2y$10$LzqMMuYNwx2vR7O7O80jGuq1//8nWQSlWKKcXc.pJYfCvjOggryKK', '0800- 0432', 38212, '6114HC', 'De Wallen 69', 0),
+(4002, 'Sven Test', 'ruitenbeeksven@gmail.com', '$2y$10$mkT6xWUHW1hCeQbRyQaEgeWw9iTpT0NT8Cza/aMybkqnw/G7XyiNK', '043849732', 38186, '6969 AR', 'teststraat 69', 1);
 
 --
--- Indexen voor geëxporteerde tabellen
+-- Indexes for dumped tables
 --
 
 --
--- Indexen voor tabel `useraccounts`
+-- Indexes for table `useraccounts`
 --
 ALTER TABLE `useraccounts`
   ADD PRIMARY KEY (`PersonID`),
