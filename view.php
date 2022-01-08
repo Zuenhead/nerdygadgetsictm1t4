@@ -11,7 +11,8 @@ if(isset($StockItem)) {
 }
 
 $tempratuur = tempratuurophalen($databaseConnection);
-print_r($tempratuur);
+print(isCold($databaseConnection,$ItemID));
+
 
 if (empty($ItemID)){
     header("location: index.php");
@@ -129,7 +130,7 @@ if (empty($ItemID)){
 
         <div id="StockItemDescription">
             <h3>Artikel beschrijving</h3>
-            <p><?php print $StockItem['SearchDetails']; ?></p>
+            <p><?php print($StockItem['SearchDetails']); if(isCold($databaseConnection,$ItemID)){print("<br>Dit product is op dit moment ". $tempratuur['temperature']. "℃");}?></p>
 
         </div>
 

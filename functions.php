@@ -320,13 +320,13 @@ function ophalenPersonID($databaseConnection) {
     return $Result;
 }
 
-function InsertAccount ($databaseConnection, $UserName, $EmailAddress, $HashedPassword, $PhoneNumber, $DeliveryCityID, $DeliveryPostalCode, $DeliveryAddress ){
+function InsertAccount ($databaseConnection, $UserName, $EmailAddress, $HashedPassword, $PhoneNumber, $DeliveryCityID, $DeliveryPostalCode, $DeliveryAddress, $Nieuwsbrief){
     $PersonID = ophalenPersonID($databaseConnection);
     $nieuwstePersonID = $PersonID['NieuwstePersonID'] + 1;
-    $sql = "INSERT INTO useraccounts(PersonID, UserName, EmailAddress, HashedPassword, PhoneNumber, DeliveryCityID, DeliveryPostalCode, DeliveryAddress)
-            VALUES ($nieuwstePersonID, ?, ?, ?, ?, ?, ?, ?);";
+    $sql = "INSERT INTO useraccounts(PersonID, UserName, EmailAddress, HashedPassword, PhoneNumber, DeliveryCityID, DeliveryPostalCode, DeliveryAddress, Nieuwsbrief)
+            VALUES ($nieuwstePersonID, ?, ?, ?, ?, ?, ?, ?, ?);";
     $Statement = mysqli_prepare($databaseConnection, $sql);
-    mysqli_stmt_bind_param($Statement,"ssssiss", $UserName, $EmailAddress, $HashedPassword, $PhoneNumber, $DeliveryCityID, $DeliveryPostalCode, $DeliveryAddress);
+    mysqli_stmt_bind_param($Statement,"ssssissi", $UserName, $EmailAddress, $HashedPassword, $PhoneNumber, $DeliveryCityID, $DeliveryPostalCode, $DeliveryAddress, $Nieuwsbrief);
     mysqli_stmt_execute($Statement);
 }
 
@@ -419,5 +419,52 @@ function tempratuurophalen ($databaseConnection){
     return $Result;
 }
 
+function isCold ($databaseConnection, $StockitemID){
+    $Query = "SELECT isChillerStock FROM stockitems where stockitemid = $StockitemID;";
+    $Result = mysqli_query($databaseConnection, $Query);
+    $Result = mysqli_fetch_array($Result, MYSQLI_ASSOC);
+
+    if(!empty($Result)){
+        return true;
+    }else{
+        return false;
+    }
+}
+
+function aanmeldingNieuwsbrief ($mail, $nieuwsbriefEmail) {
+    //Probeert mail te verzenden
+//    try {
+        //Server instellingen
+        $mail->SMTPSecure = 'tls';
+        $mail->isSMTP();                                            //Send using SMTP
+        $mail->Host = 'smtp.gmail.com';                     //Set the SMTP server to send through
+        $mail->SMTPAuth = true;                                   //Enable SMTP authentication
+        $mail->Username = 'lopendeijsbeer@gmail.com';                     //SMTP username
+        $mail->Password = 'Jn5gSfVA^At!N./r';                               //SMTP password
+        $mail->Port = 587;                                    //TCP port to connect to; use 587 if you have set `SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS`
+        $mail->SMTPOptions = array(
+            'ssl' => array(
+                'verify_peer' => false,
+                'verify_peer_name' => false,
+                'allow_self_signed' => false
+            )
+        );
+
+        //ontvangers en verzender
+        $mail->setFrom('lopendeijsbeer@gmail.com', 'Mailer');
+        $mail->addAddress($nieuwsbriefEmail, 'User');     //Add a recipient
+
+        //inhoud
+        $mail->Subject = 'Aanmelding Nieuwsbrief';
+        $mail->Body    = 'Hartelijk bedankt voor het aanmelden voor onze nieuwsbrief!<br>Wij zullen u op de hoogte houden van leuke acties en kortingen.';
+        $mail->AltBody = 'Hartelijk bedankt voor het aanmelden voor onze nieuwsbrief!\nWij zullen u op de hoogte houden van leuke acties en kortingen.';
+
+        //verzenden
+        $mail->send();
+        //echo 'Message has been sent';
+//    } catch (Exception $e) {
+//        echo "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
+//    }
+}
 ?>
 
