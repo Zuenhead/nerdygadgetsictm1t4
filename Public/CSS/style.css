@@ -1147,3 +1147,8 @@ input#QuantityDisplay{
 }
 
 /* Einde reviews in view */
+
+#nbbox {
+    width: auto;
+    height: auto;
+}
