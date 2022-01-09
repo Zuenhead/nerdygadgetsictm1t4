@@ -190,7 +190,7 @@ function ophalenKorting($databaseConnection,$customerID,$kortingscode){
         $result = mysqli_fetch_all($result,MYSQLI_ASSOC);
         $result = array(
             "Amount" => $result[0]["DiscountAmount"],
-            "Percentage" => 1-$result[0]["DiscountPercentage"]/100,
+            "Percentage" => $result[0]["DiscountPercentage"]/100,
             "Verzend" => $result[0]["DiscountShipping"]
         );
         return $result;
@@ -200,7 +200,7 @@ function ophalenKorting($databaseConnection,$customerID,$kortingscode){
 }
 
 function berekenKorting($amount,$percentage,$subtotaal){
-    $korting = $subtotaal - ($amount + $percentage*$subtotaal);
+    $korting = $amount + ($percentage*$subtotaal);
     return $korting;
 }
 
