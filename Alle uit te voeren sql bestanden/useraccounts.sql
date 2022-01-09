@@ -44,8 +44,7 @@ CREATE TABLE `useraccounts` (
 --
 
 INSERT INTO `useraccounts` (`PersonID`, `UserName`, `EmailAddress`, `HashedPassword`, `PhoneNumber`, `DeliveryCityID`, `DeliveryPostalCode`, `DeliveryAddress`, `Nieuwsbrief`) VALUES
-(4001, 'Mike Oxmaul', 'demo@gmail.com', '$2y$10$LzqMMuYNwx2vR7O7O80jGuq1//8nWQSlWKKcXc.pJYfCvjOggryKK', '0800- 0432', 38212, '6114HC', 'De Wallen 69', 0),
-(4002, 'Sven Test', 'ruitenbeeksven@gmail.com', '$2y$10$mkT6xWUHW1hCeQbRyQaEgeWw9iTpT0NT8Cza/aMybkqnw/G7XyiNK', '043849732', 38186, '6969 AR', 'teststraat 69', 1);
+(4001, 'Sven Test', 'demo@gmail.com', '$2y$10$mkT6xWUHW1hCeQbRyQaEgeWw9iTpT0NT8Cza/aMybkqnw/G7XyiNK', ' 08000432', 38186, '6969 AR', 'teststraat 69', 1);
 
 --
 -- Indexes for dumped tables
