@@ -10,8 +10,7 @@ if(isset($StockItem)) {
     $Stock = filter_var($StockItem["QuantityOnHand"], FILTER_SANITIZE_NUMBER_INT); //$StockItem geeft voor de voorraad "voorraad: x" dit haalt het nummer eruit
 }
 
-$tempratuur = tempratuurophalen($databaseConnection);
-print(isCold($databaseConnection,$ItemID));
+
 
 
 if (empty($ItemID)){
@@ -116,7 +115,7 @@ if (empty($ItemID)){
                 <?php
                 if (isset($_POST["submit"])) {              // zelfafhandelend formulier
                     $amount = (int)$_POST["amount"] ;
-                    if($_POST['amount'] > 0) {
+                    if($_POST['amount'] > 0 and $_POST["amount"]<$Stock) {
                         addProductToCart($ItemID, $amount);
                         print("<div> Product added to <a href='cart.php'> cart!</a></div>"); //confirmatie winkelmand
                     }
@@ -130,7 +129,11 @@ if (empty($ItemID)){
 
         <div id="StockItemDescription">
             <h3>Artikel beschrijving</h3>
-            <p><?php print($StockItem['SearchDetails']); if(isCold($databaseConnection,$ItemID)){print("<br>Dit product is op dit moment ". $tempratuur['temperature']. "℃");}?></p>
+            <p><?php print $StockItem['SearchDetails'];
+            if(isitemgecoold($databaseConnection, $ItemID)){
+                $tempratuur = tempratuurophalen($databaseConnection);
+                print("<br>De temperatuur van dit product is ". $tempratuur["temperature"]." °C.");
+            }?> </p>
 
         </div>
 

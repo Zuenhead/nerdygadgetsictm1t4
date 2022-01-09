@@ -419,17 +419,19 @@ function tempratuurophalen ($databaseConnection){
     return $Result;
 }
 
-function isCold ($databaseConnection, $StockitemID){
-    $Query = "SELECT isChillerStock FROM stockitems where stockitemid = $StockitemID;";
+function isitemgecoold($databaseConnection, $productID){
+    $Query = "SELECT IsChillerStock FROM stockitems WHERE StockItemID = $productID";
     $Result = mysqli_query($databaseConnection, $Query);
     $Result = mysqli_fetch_array($Result, MYSQLI_ASSOC);
-
-    if(!empty($Result)){
-        return true;
-    }else{
-        return false;
+    if ($Result["IsChillerStock"] == 1){
+        return TRUE;
+    } Else {
+        return FALSE;
     }
+
 }
+
+
 
 function aanmeldingNieuwsbrief ($mail, $nieuwsbriefEmail) {
     //Probeert mail te verzenden
