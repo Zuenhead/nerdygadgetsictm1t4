@@ -107,7 +107,7 @@ if (empty($vnaam) || empty($anaam)  || empty($huisnummer) || empty($straat) || e
 <main>
     <div class="accountmaken">
         <section class ="section-default">
-            <h1>account creeren</h1>
+            <h1>account creëren</h1>
             <form class="form-signup" method="post">
 
                 <label for="vnaam">Voornaam</label>
