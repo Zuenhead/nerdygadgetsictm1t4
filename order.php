@@ -129,7 +129,7 @@ $cart = getCart();
         }
     }
 
-    if (!isset($_POST['DoorgaanBetalen']) && !isset($_GET['error'])){ //Als je hier niet via de winkelmand komt wordt je naar index gestuurd.
+     if (!empty($_POST['DoorgaanBetalen']) && !empty($_POST['GeenAccountOrder']) && !empty($_POST['order']) && !empty($_POST['verandergegevens'])){ //Als je hier niet via de winkelmand komt wordt je naar index gestuurd.
         header("location: index.php");
         exit();
     }
